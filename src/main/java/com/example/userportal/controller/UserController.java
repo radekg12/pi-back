@@ -35,7 +35,7 @@ public class UserController {
   @GetMapping
   public Page<User> findAllByPage(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                   @RequestParam(value = "per_page", required = false, defaultValue = "2") int size,
-                                  @RequestParam(value = "sort_by", required = false, defaultValue = "firstName_asc") String sort) {
+                                  @RequestParam(value = "sort_by", required = false, defaultValue = "id_asc") String sort) {
     return userService.findPaginated(page, size, sort);
   }
 

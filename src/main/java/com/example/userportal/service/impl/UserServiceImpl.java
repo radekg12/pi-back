@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Iterable<User> getPage(int page) {
-    return repository.findAll(PageRequest.of(page, 20, Sort.Direction.DESC, "firstName"));
+    return repository.findAll(PageRequest.of(page, 20, Sort.Direction.DESC, "id"));
   }
 
   @Override
