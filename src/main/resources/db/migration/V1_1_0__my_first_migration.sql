@@ -240,3 +240,8 @@ CREATE TABLE `order_position`
   KEY           `fkIdx_104` (`order_id`),
   CONSTRAINT `FK_104` FOREIGN KEY `fkIdx_104` (`order_id`) REFERENCES `order` (`id`)
 );
+
+
+
+
+

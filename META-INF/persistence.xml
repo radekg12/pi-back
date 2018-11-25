@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
 
+    <persistence-unit name="persistenceUnit">
+        <class>com.example.userportal.domain.Address</class>
+        <class>com.example.userportal.domain.Customer</class>
+        <class>com.example.userportal.domain.DeliveryType</class>
+        <class>com.example.userportal.domain.Discount</class>
+        <class>com.example.userportal.domain.Order</class>
+        <class>com.example.userportal.domain.OrderPosition</class>
+        <class>com.example.userportal.domain.OrderStatus</class>
+        <class>com.example.userportal.domain.OrderStatusCategory</class>
+        <class>com.example.userportal.domain.PaymentMethod</class>
+        <class>com.example.userportal.domain.Product</class>
+        <class>com.example.userportal.domain.ProductCategory</class>
+        <class>com.example.userportal.domain.ProductSubcategory</class>
+        <class>com.example.userportal.domain.ShoppingCart</class>
+        <class>com.example.userportal.domain.ShoppingCartPosition</class>
+        <class>com.example.userportal.domain.SpecificationPosition</class>
+        <class>com.example.userportal.domain.UserAccount</class>
+        <class>com.example.userportal.domain.UserRole</class>
+        <properties>
+            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/testdb"/>
+            <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
+        </properties>
+    </persistence-unit>
 </persistence>
