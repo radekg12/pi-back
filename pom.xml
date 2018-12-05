@@ -123,6 +123,9 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>5.2.1</version>
+                <configuration>
+                    <configFile>src/main/resources/flyway.config</configFile>
+                </configuration>
             </plugin>
         </plugins>
     </build>

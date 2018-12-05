@@ -14,7 +14,6 @@
         <class>com.example.userportal.domain.Product</class>
         <class>com.example.userportal.domain.ProductCategory</class>
         <class>com.example.userportal.domain.ProductSubcategory</class>
-        <class>com.example.userportal.domain.ShoppingCart</class>
         <class>com.example.userportal.domain.ShoppingCartPosition</class>
         <class>com.example.userportal.domain.SpecificationPosition</class>
         <class>com.example.userportal.domain.UserAccount</class>

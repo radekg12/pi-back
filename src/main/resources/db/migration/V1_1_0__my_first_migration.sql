@@ -12,15 +12,6 @@ CREATE TABLE `user_role`
 );
 
 
--- ************************************** `shopping_cart`
-
-CREATE TABLE `shopping_cart`
-(
-  `id` int NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`)
-);
-
-
 -- ************************************** `product_category`
 
 CREATE TABLE `product_category`
@@ -132,13 +123,13 @@ CREATE TABLE `order_status`
 CREATE TABLE `product`
 (
   `id`                int          NOT NULL AUTO_INCREMENT,
-  `name`              varchar(45)  NOT NULL,
+  `name`              varchar(100) NOT NULL,
   `description`       text,
   `company`           varchar(45)  NOT NULL,
   `quantity_in_stock` int          NOT NULL,
   `unity_price`       int          NOT NULL,
   `subcategory_id`    int          NOT NULL,
-  `image_url`         varchar(255) NOT NULL,
+  `image_url`         varchar(500) NOT NULL,
   PRIMARY KEY (`id`),
   KEY                 `fkIdx_98` (`subcategory_id`),
   CONSTRAINT `FK_98` FOREIGN KEY `fkIdx_98` (`subcategory_id`) REFERENCES `product_subcategory` (`id`)
@@ -149,21 +140,18 @@ CREATE TABLE `product`
 
 CREATE TABLE `customer`
 (
-  `id`               int         NOT NULL,
-  `company_name`     varchar(45) NOT NULL,
-  `first_name`       varchar(45) NOT NULL,
-  `last_name`        varchar(45) NOT NULL,
-  `phone_number`     int,
-  `email`            varchar(45) NOT NULL,
-  `address_id`       int         NOT NULL,
-  `shopping_cart_id` int         NOT NULL,
-  `user_account_id`  int         NOT NULL,
+  `id`              int         NOT NULL AUTO_INCREMENT,
+  `company_name`    varchar(45) NOT NULL,
+  `first_name`      varchar(45) NOT NULL,
+  `last_name`       varchar(45) NOT NULL,
+  `phone_number`    int,
+  `email`           varchar(45) NOT NULL,
+  `address_id`      int         NOT NULL,
+  `user_account_id` int         NOT NULL,
   PRIMARY KEY (`id`),
-  KEY                `fkIdx_128` (`address_id`),
+  KEY               `fkIdx_128` (`address_id`),
   CONSTRAINT `FK_128` FOREIGN KEY `fkIdx_128` (`address_id`) REFERENCES `address` (`id`),
-  KEY                `fkIdx_134` (`shopping_cart_id`),
-  CONSTRAINT `FK_134` FOREIGN KEY `fkIdx_134` (`shopping_cart_id`) REFERENCES `shopping_cart` (`id`),
-  KEY                `fkIdx_144` (`user_account_id`),
+  KEY               `fkIdx_144` (`user_account_id`),
   CONSTRAINT `FK_144` FOREIGN KEY `fkIdx_144` (`user_account_id`) REFERENCES `user_account` (`id`)
 );
 
@@ -186,15 +174,15 @@ CREATE TABLE `specification_position`
 
 CREATE TABLE `shopping_cart_position`
 (
-  `id`               int NOT NULL AUTO_INCREMENT,
-  `quantity`         int NOT NULL,
-  `product_id`       int NOT NULL,
-  `shopping_cart_id` int NOT NULL,
+  `id`          int NOT NULL AUTO_INCREMENT,
+  `product_id`  int NOT NULL,
+  `customer_id` int NOT NULL,
+  `quantity`    int NOT NULL,
   PRIMARY KEY (`id`),
-  KEY                `fkIdx_107` (`product_id`),
+  KEY           `fkIdx_107` (`product_id`),
   CONSTRAINT `FK_107` FOREIGN KEY `fkIdx_107` (`product_id`) REFERENCES `product` (`id`),
-  KEY                `fkIdx_110` (`shopping_cart_id`),
-  CONSTRAINT `FK_110` FOREIGN KEY `fkIdx_110` (`shopping_cart_id`) REFERENCES `shopping_cart` (`id`)
+  KEY           `fkIdx_157` (`customer_id`),
+  CONSTRAINT `FK_157` FOREIGN KEY `fkIdx_157` (`customer_id`) REFERENCES `customer` (`id`)
 );
 
 

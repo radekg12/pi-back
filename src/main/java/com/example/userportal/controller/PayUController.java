@@ -1,5 +1,6 @@
 package com.example.userportal.controller;
 
+import com.example.userportal.RequestModel.PayUOrderResponseModel;
 import com.example.userportal.service.PayUClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,12 +23,9 @@ public class PayUController {
   }
 
   @PostMapping(value = "/make/payment")
-  public String makePayment() {
-    return payUClient.createPayment();
+  public PayUOrderResponseModel makePayment(HttpServletRequest request) {
+    int customerId = 1;
+    return payUClient.payForOrder(customerId, request);
   }
 
-  @PostMapping(value = "/complete/payment")
-  public String completePayment(HttpServletRequest request) {
-    return payUClient.completePayment(request);
-  }
 }

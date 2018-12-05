@@ -1,5 +1,6 @@
 package com.example.userportal.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -23,9 +24,11 @@ public class Address {
   @Column(name = "postcode")
   private int postcode;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "addressByAddressId")
   private Collection<Customer> customersById;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "addressByDeliveryAddressId")
   private Collection<Order> ordersById;
 

@@ -1,12 +1,18 @@
 package com.example.userportal.domain;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
 
+@Builder
 @Data
 @Entity
+@EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "shopping_cart_position", schema = "testdb")
+@ToString
 public class ShoppingCartPosition {
 
   @Id
@@ -17,11 +23,20 @@ public class ShoppingCartPosition {
   @Column(name = "quantity", nullable = false)
   private int quantity;
 
-  @ManyToOne
-  @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
-  private Product productByProductId;
+  @Column(name = "product_id", nullable = false)
+//  @Column(name = "product_id", nullable = false)
+  private int productId;
+
+  @Column(name = "customer_id", nullable = false)
+//  @Column(name = "customer_id", nullable = false)
+  private int customerId;
 
   @ManyToOne
-  @JoinColumn(name = "shopping_cart_id", referencedColumnName = "id", nullable = false)
-  private ShoppingCart shoppingCartByShoppingCartId;
+  @JoinColumn(name = "product_id", referencedColumnName = "id", insertable = false, updatable = false)
+  private Product productByProductId;
+
+  @JsonIgnore
+  @ManyToOne
+  @JoinColumn(name = "customer_id", referencedColumnName = "id", insertable = false, updatable = false)
+  private Customer customerByCustomerId;
 }

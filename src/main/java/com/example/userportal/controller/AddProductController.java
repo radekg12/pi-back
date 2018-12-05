@@ -1,7 +1,7 @@
 package com.example.userportal.controller;
 
-import com.example.userportal.domain.User;
-import com.example.userportal.service.UserService;
+import com.example.userportal.domain.Product;
+import com.example.userportal.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,17 +18,17 @@ import javax.ws.rs.core.Response;
 @RestController
 //@RequestMapping({"/api"})
 @RequestMapping({"/add"})
-public class AddUserController {
+public class AddProductController {
 
-  private final UserService userService;
+  private final ProductService productService;
 
   @Autowired
-  public AddUserController(UserService userService) {
-    this.userService = userService;
+  public AddProductController(ProductService productService) {
+    this.productService = productService;
   }
 
   @GetMapping
-  public User pay() {
+  public Product pay() {
 
     Client client = ClientBuilder.newClient();
     Entity<String> payload = Entity.text("grant_type=client_credentials&#38;client_id=145227&#38;client_secret=12f071174cb7eb79d4aac5bc2f07563f");

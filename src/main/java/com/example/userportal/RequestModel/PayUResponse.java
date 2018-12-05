@@ -1,4 +1,4 @@
-package com.example.userportal.service.impl;
+package com.example.userportal.RequestModel;
 
 import lombok.Data;
 

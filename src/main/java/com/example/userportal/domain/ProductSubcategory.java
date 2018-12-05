@@ -1,5 +1,6 @@
 package com.example.userportal.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,12 +17,14 @@ public class ProductSubcategory {
   private int id;
 
   @Column(name = "subcategory_name")
-  private String subcategoryName;
+  private String name;
 
-  @OneToMany(mappedBy = "productSubcategoryBySubcategoryId")
-  private Collection<Product> productsById;
+  @JsonIgnore
+  @OneToMany(mappedBy = "productSubcategory")
+  private Collection<Product> products;
 
+  @JsonIgnore
   @ManyToOne
-  @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
-  private ProductCategory productCategoryByCategoryId;
+  @JoinColumn(name = "category_id", referencedColumnName = "id")
+  private ProductCategory productCategory;
 }

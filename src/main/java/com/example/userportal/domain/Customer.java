@@ -1,5 +1,6 @@
 package com.example.userportal.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -29,20 +30,22 @@ public class Customer {
   @Column(name = "email")
   private String email;
 
-
+  @JsonIgnore
   @ManyToOne
   @JoinColumn(name = "address_id", referencedColumnName = "id", nullable = false)
   private Address addressByAddressId;
 
-  @ManyToOne
-  @JoinColumn(name = "shopping_cart_id", referencedColumnName = "id", nullable = false)
-  private ShoppingCart shoppingCartByShoppingCartId;
-
+  @JsonIgnore
   @ManyToOne
   @JoinColumn(name = "user_account_id", referencedColumnName = "id", nullable = false)
   private UserAccount userAccountByUserAccountId;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "customerByCustomerId")
   private Collection<Order> ordersById;
+
+  @JsonIgnore
+  @OneToMany(mappedBy = "customerByCustomerId")
+  private Collection<ShoppingCartPosition> shoppingCartPositionsById;
 
 }

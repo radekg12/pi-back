@@ -1,5 +1,6 @@
 package com.example.userportal.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,7 +17,7 @@ public class Product {
   @Column(name = "name")
   private String name;
 
-  @Column(name = "description")
+  @Column(name = "description", columnDefinition = "TEXT")
   private String description;
 
   @Column(name = "company")
@@ -28,20 +29,22 @@ public class Product {
   @Column(name = "unity_price")
   private int unityPrice;
 
-  @Column(name = "image_url")
+  @Column(name = "image_url", length = 500)
   private String imageUrl;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "productByProductId")
-  private Collection<OrderPosition> orderPositionsById;
+  private Collection<OrderPosition> orderPositions;
 
   @ManyToOne
-  @JoinColumn(name = "subcategory_id", referencedColumnName = "id", nullable = false)
-  private ProductSubcategory productSubcategoryBySubcategoryId;
+  @JoinColumn(name = "subcategory_id", referencedColumnName = "id")
+  private ProductSubcategory productSubcategory;
+
+  @JsonIgnore
+  @OneToMany(mappedBy = "productByProductId")
+  private Collection<ShoppingCartPosition> shoppingCartPositions;
 
   @OneToMany(mappedBy = "productByProductId")
-  private Collection<ShoppingCartPosition> shoppingCartPositionsById;
-
-  @OneToMany(mappedBy = "productByProductId")
-  private Collection<SpecificationPosition> specificationPositionsById;
+  private Collection<SpecificationPosition> specificationPositions;
 
 }

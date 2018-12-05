@@ -1,8 +1,8 @@
 package com.example.userportal.service.impl;
 
-import com.example.userportal.domain.User;
-import com.example.userportal.repository.UserRepository;
-import com.example.userportal.service.UserService;
+import com.example.userportal.domain.Product;
+import com.example.userportal.repository.ProductRepository;
+import com.example.userportal.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,29 +12,28 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class ProductServiceImpl implements ProductService {
 
-  private final UserRepository repository;
+  private final ProductRepository repository;
 
   @Autowired
-  public UserServiceImpl(UserRepository repository) {
+  public ProductServiceImpl(ProductRepository repository) {
     this.repository = repository;
   }
 
-  @Override
-  public User create(User user) {
-    return repository.save(user);
+  public Product create(Product product) {
+    return repository.save(product);
   }
 
   @Override
-  public User delete(Long id) {
-    Optional<User> user = findById(id);
-    user.ifPresent(repository::delete);
-    return user.orElse(null);
+  public Product delete(int id) {
+    Optional<Product> product = Optional.ofNullable(findById(id));
+    product.ifPresent(repository::delete);
+    return product.orElse(null);
   }
 
   @Override
-  public Iterable<User> findAll() {
+  public Iterable<Product> findAll() {
     return repository.findAll();
   }
 
@@ -44,12 +43,12 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Iterable<User> getPage(int page) {
+  public Iterable<Product> getPage(int page) {
     return repository.findAll(PageRequest.of(page, 20, Sort.Direction.DESC, "id"));
   }
 
   @Override
-  public Page<User> findPaginated(int page, int size, String sort) {
+  public Page<Product> findPaginated(int page, int size, String sort) {
     String[] sortBy = sort.split("_");
     String sortProperty = sortBy[0];
     Sort.Direction sortDirection = sortBy[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
@@ -57,12 +56,12 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Optional<User> findById(Long id) {
-    return repository.findById(id);
+  public Product findById(int id) {
+    return repository.findById(id).orElse(null);
   }
 
   @Override
-  public User update(User user) {
+  public Product update(Product product) {
     return null;
   }
 }

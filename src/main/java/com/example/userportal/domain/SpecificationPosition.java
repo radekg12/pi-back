@@ -1,5 +1,6 @@
 package com.example.userportal.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -20,6 +21,7 @@ public class SpecificationPosition {
   @Column(name = "value")
   private String value;
 
+  @JsonIgnore
   @ManyToOne
   @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
   private Product productByProductId;
