@@ -127,7 +127,7 @@ CREATE TABLE `product`
   `description`       text,
   `company`           varchar(45)  NOT NULL,
   `quantity_in_stock` int          NOT NULL,
-  `unity_price`       int          NOT NULL,
+  `unit_price`        int          NOT NULL,
   `subcategory_id`    int          NOT NULL,
   `image_url`         varchar(500) NOT NULL,
   PRIMARY KEY (`id`),
@@ -217,11 +217,11 @@ CREATE TABLE `order`
 
 CREATE TABLE `order_position`
 (
-  `id`          int NOT NULL AUTO_INCREMENT,
-  `quantity`    int NOT NULL,
-  `unity_price` int NOT NULL,
-  `product_id`  int NOT NULL,
-  `order_id`    int NOT NULL,
+  `id`         int NOT NULL AUTO_INCREMENT,
+  `quantity`   int NOT NULL,
+  `unit_price` int NOT NULL,
+  `product_id` int NOT NULL,
+  `order_id`   int NOT NULL,
   PRIMARY KEY (`id`),
   KEY           `fkIdx_101` (`product_id`),
   CONSTRAINT `FK_101` FOREIGN KEY `fkIdx_101` (`product_id`) REFERENCES `product` (`id`),

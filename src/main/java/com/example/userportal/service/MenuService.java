@@ -1,7 +1,7 @@
 package com.example.userportal.service;
 
-import com.example.userportal.domain.ProductCategory;
+import com.example.userportal.service.dto.ProductCategoryDTO;
 
 public interface MenuService {
-  Iterable<ProductCategory> findAll();
+  Iterable<ProductCategoryDTO> findAll();
 }

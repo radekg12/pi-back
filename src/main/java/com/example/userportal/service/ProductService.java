@@ -1,22 +1,24 @@
 package com.example.userportal.service;
 
-import com.example.userportal.domain.Product;
+import com.example.userportal.service.dto.ProductDTO;
 import org.springframework.data.domain.Page;
 
 public interface ProductService {
-  Product create(Product product);
+  ProductDTO create(ProductDTO productDto);
 
-  Product findById(int id);
+  Page<ProductDTO> findSubcategoryPaginated(int subcategoryId, int page, int size, String sort);
 
-  Product update(Product product);
+  ProductDTO findById(int id);
 
-  Product delete(int id);
+  ProductDTO delete(int id);
 
-  Iterable<Product> findAll();
+  Iterable<ProductDTO> findAll();
 
   Long getCollectionSize();
 
-  Iterable<Product> getPage(int page);
+//  Iterable<Product> getPage(int page);
 
-  Page<Product> findPaginated(int page, int size, String sort);
+  Page<ProductDTO> findPaginated(int page, int size, String sort);
+
+  ProductDTO update(ProductDTO productDto);
 }

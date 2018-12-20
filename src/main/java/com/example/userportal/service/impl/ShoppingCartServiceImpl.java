@@ -3,6 +3,8 @@ package com.example.userportal.service.impl;
 import com.example.userportal.domain.ShoppingCartPosition;
 import com.example.userportal.repository.ShoppingCartRepository;
 import com.example.userportal.service.ShoppingCartService;
+import com.example.userportal.service.dto.ShoppingCartPositionDTO;
+import com.example.userportal.service.mapper.ShoppingCartPositionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,23 +14,25 @@ import java.util.Optional;
 public class ShoppingCartServiceImpl implements ShoppingCartService {
 
   private final ShoppingCartRepository repository;
+  private final ShoppingCartPositionMapper mapper;
 
 
   @Autowired
-  public ShoppingCartServiceImpl(ShoppingCartRepository repository) {
+  public ShoppingCartServiceImpl(ShoppingCartRepository repository, ShoppingCartPositionMapper mapper) {
     this.repository = repository;
+    this.mapper = mapper;
   }
 
 
   @Override
-  public ShoppingCartPosition addPosition(int customerId, int productId) {
+  public ShoppingCartPositionDTO addPosition(int customerId, int productId) {
 
     Optional<ShoppingCartPosition> position = repository.findByCustomerIdAndProductId(customerId, productId);
 
     return position
             .map(p -> {
               p.setQuantity(p.getQuantity() + 1);
-              return repository.save(p);
+              return mapper.toShoppingCartPositionDto(repository.save(p));
             })
             .orElseGet(() -> {
               ShoppingCartPosition newPosition = ShoppingCartPosition.builder()
@@ -36,30 +40,33 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                       .productId(productId)
                       .quantity(1)
                       .build();
-              return repository.save(newPosition);
+
+
+              return mapper.toShoppingCartPositionDto(repository.save(newPosition));
             });
 
   }
 
   @Override
-  public Optional<ShoppingCartPosition> getPosition(int positionId) {
-    return repository.findById(positionId);
+  public ShoppingCartPositionDTO getPosition(int positionId) {
+    ShoppingCartPosition position = repository.findById(positionId).orElse(null);
+    return mapper.toShoppingCartPositionDto(position);
   }
 
   @Override
-  public Iterable<ShoppingCartPosition> getAllPositions(int customerId) {
-    return repository.findByCustomerId(customerId);
+  public Iterable<ShoppingCartPositionDTO> getAllPositions(int customerId) {
+    return mapper.toShoppingCartPositionDtos(repository.findByCustomerId(customerId));
   }
 
   @Override
-  public ShoppingCartPosition getPosition(int customerId, int productId) {
+  public ShoppingCartPositionDTO getPosition(int customerId, int productId) {
     Optional<ShoppingCartPosition> position = repository.findByCustomerIdAndProductId(customerId, productId);
 
-    return position.orElse(null);
+    return mapper.toShoppingCartPositionDto(position.orElse(null));
   }
 
   @Override
-  public ShoppingCartPosition updatePositionQuantity(int customerId, int productId, int quantity) {
+  public ShoppingCartPositionDTO updatePositionQuantity(int customerId, int productId, int quantity) {
     Optional<ShoppingCartPosition> position = repository.findByCustomerIdAndProductId(customerId, productId);
     position.ifPresent(p -> {
               p.setQuantity(quantity);
@@ -67,14 +74,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             }
     );
 
-    return position.orElse(null);
+    return mapper.toShoppingCartPositionDto(position.orElse(null));
   }
 
   @Override
-  public ShoppingCartPosition deletePosition(int customerId, int productId) {
+  public ShoppingCartPositionDTO deletePosition(int customerId, int productId) {
     Optional<ShoppingCartPosition> position = repository.findByCustomerIdAndProductId(customerId, productId);
     position.ifPresent(repository::delete);
 
-    return position.orElse(null);
+    return mapper.toShoppingCartPositionDto(position.orElse(null));
   }
 }

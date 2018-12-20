@@ -26,8 +26,8 @@ public class Product {
   @Column(name = "quantity_in_stock")
   private int quantityInStock;
 
-  @Column(name = "unity_price")
-  private int unityPrice;
+  @Column(name = "unit_price")
+  private int unitPrice;
 
   @Column(name = "image_url", length = 500)
   private String imageUrl;

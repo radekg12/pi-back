@@ -1,5 +1,6 @@
 package com.example.userportal.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -18,6 +19,7 @@ public class OrderStatus {
   @Column(name = "name")
   private String name;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "orderStatusByOrderStatusId")
   private Collection<Order> ordersById;
 

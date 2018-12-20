@@ -1,21 +1,19 @@
 package com.example.userportal.service;
 
-import com.example.userportal.domain.ShoppingCartPosition;
-
-import java.util.Optional;
+import com.example.userportal.service.dto.ShoppingCartPositionDTO;
 
 public interface ShoppingCartService {
 
-  ShoppingCartPosition addPosition(int customerId, int productId);
+  ShoppingCartPositionDTO addPosition(int customerId, int productId);
 
-  Optional<ShoppingCartPosition> getPosition(int id);
+  ShoppingCartPositionDTO getPosition(int id);
 
-  Iterable<ShoppingCartPosition> getAllPositions(int customerId);
+  Iterable<ShoppingCartPositionDTO> getAllPositions(int customerId);
 
-  ShoppingCartPosition getPosition(int customerId, int productId);
+  ShoppingCartPositionDTO getPosition(int customerId, int productId);
 
 
-  ShoppingCartPosition updatePositionQuantity(int customerId, int productId, int quantity);
+  ShoppingCartPositionDTO updatePositionQuantity(int customerId, int productId, int quantity);
 
-  ShoppingCartPosition deletePosition(int customerId, int productId);
+  ShoppingCartPositionDTO deletePosition(int customerId, int productId);
 }

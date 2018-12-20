@@ -4,10 +4,15 @@ import com.example.userportal.RequestModel.PayUOrderRequest;
 import com.example.userportal.RequestModel.PayUOrderResponseModel;
 import com.example.userportal.RequestModel.PayUProduct;
 import com.example.userportal.RequestModel.PayUResponse;
-import com.example.userportal.domain.Product;
-import com.example.userportal.domain.ShoppingCartPosition;
-import com.example.userportal.service.PayUClient;
-import com.example.userportal.service.ShoppingCartService;
+import com.example.userportal.domain.*;
+import com.example.userportal.service.*;
+import com.example.userportal.service.dto.PayUOrderDTO;
+import com.example.userportal.service.dto.ProductDTO;
+import com.example.userportal.service.dto.ShoppingCartPositionDTO;
+import com.example.userportal.service.mapper.AddressMapper;
+import com.example.userportal.service.mapper.DeliveryTypeMapper;
+import com.example.userportal.service.mapper.PaymentMethodMapper;
+import com.example.userportal.service.mapper.ProductMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +25,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.sql.Timestamp;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,26 +38,42 @@ import java.util.stream.Collectors;
 public class PayUClientImpl implements PayUClient {
   private static final String PAYU_AUTHORIZE_URL = "https://secure.snd.payu.com/pl/standard/user/oauth/authorize";
   private static final String PAYU_ORDERS_URL = "https://secure.snd.payu.com/api/v2_1/orders/";
+  private final ShoppingCartService shoppingCartService;
+  private final OrderService orderService;
+  private final CustomerService customerService;
+  private final OrderStatusService orderStatusService;
+  private final AddressService addressService;
   @Value("${payu.clientId}")
   private String clientId;
   @Value("${payu.clientSecret}")
   private String clientSecret;
-  private final ShoppingCartService shoppingCartService;
   @Value("${payu.pos_id}")
   private String posId;
+  private ProductMapper productMapper;
+  private AddressMapper addressMapper;
+  private DeliveryTypeMapper deliveryTypeMapper;
+  private PaymentMethodMapper paymentMethodMapper;
 
   @Autowired
-  public PayUClientImpl(ShoppingCartService shoppingCartService) {
+  public PayUClientImpl(ShoppingCartService shoppingCartService, OrderService orderService, CustomerService customerService, OrderStatusService orderStatusService, AddressService addressService, ProductMapper productMapper, AddressMapper addressMapper, DeliveryTypeMapper deliveryTypeMapper, PaymentMethodMapper paymentMethodMapper) {
     this.shoppingCartService = shoppingCartService;
+    this.orderService = orderService;
+    this.customerService = customerService;
+    this.orderStatusService = orderStatusService;
+    this.addressService = addressService;
+    this.productMapper = productMapper;
+    this.addressMapper = addressMapper;
+    this.deliveryTypeMapper = deliveryTypeMapper;
+    this.paymentMethodMapper = paymentMethodMapper;
   }
 
   @Override
-  public PayUOrderResponseModel payForOrder(int customerId, HttpServletRequest req) {
-    PayUResponse payUResponse = null;
+  public PayUOrderResponseModel payForOrder(int customerId, HttpServletRequest req, PayUOrderDTO payUOrderDTO) {
+    PayUResponse payUResponse;
     PayUOrderResponseModel orderResponse = null;
     try {
       payUResponse = createPayment(customerId);
-      orderResponse = completePayment(customerId, req, payUResponse);
+      orderResponse = completePayment(customerId, req, payUResponse, payUOrderDTO);
     } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     }
@@ -83,16 +106,16 @@ public class PayUClientImpl implements PayUClient {
   }
 
   @Override
-  public PayUOrderResponseModel completePayment(int customerId, HttpServletRequest req, PayUResponse payUResponse) throws IOException, InterruptedException {
+  public PayUOrderResponseModel completePayment(int customerId, HttpServletRequest req, PayUResponse payUResponse, PayUOrderDTO payUOrderDTO) throws IOException, InterruptedException {
 
-    Iterable<ShoppingCartPosition> shoppingCartPositions = shoppingCartService.getAllPositions(customerId);
+    Iterable<ShoppingCartPositionDTO> shoppingCartPositionDtos = shoppingCartService.getAllPositions(customerId);
 
     List<PayUProduct> products = new ArrayList<>();
-    shoppingCartPositions.forEach(p -> {
-      Product product = p.getProductByProductId();
+    shoppingCartPositionDtos.forEach(p -> {
+      ProductDTO product = p.getProduct();
       PayUProduct payUProduct = PayUProduct.builder()
               .name(product.getName())
-              .unitPrice(product.getUnityPrice())
+              .unitPrice(product.getUnitPrice())
               .quantity(p.getQuantity())
               .build();
       products.add(payUProduct);
@@ -102,14 +125,47 @@ public class PayUClientImpl implements PayUClient {
             .map(x -> x.getQuantity() * x.getUnitPrice())
             .reduce((x, y) -> x + y)
             .orElse(0);
+    totalAmount += payUOrderDTO.getDeliveryType().getPrice();
+    totalAmount += payUOrderDTO.getPaymentMethod().getPrice();
 
     String ipAddress = req.getRemoteAddr();
 
+    List<OrderPosition> orderProducts = new ArrayList<>();
+    shoppingCartPositionDtos.forEach(p -> {
+      ProductDTO productDto = p.getProduct();
+      OrderPosition orderPosition = OrderPosition.builder()
+              .productByProductId(productMapper.toProduct(productDto))
+              .quantity(p.getQuantity())
+              .unitPrice(p.getProduct().getUnitPrice())
+              .build();
+      orderProducts.add(orderPosition);
+    });
+
+    OrderStatus orderStatus = orderStatusService.getStatusById(1);
+    Customer customer = customerService.getCustomer(customerId);
+    Address address = addressService.save(addressMapper.toAddress(payUOrderDTO.getAddress()));
+
+
+    Order order = Order.builder()
+            .dateOfOrder(Timestamp.valueOf(LocalDateTime.now()))
+            .dateOfDelivery(Timestamp.valueOf(LocalDateTime.now().plusDays(3)))
+            .orderPositionsById(orderProducts)
+            .addressByDeliveryAddressId(address)
+            .deliveryTypeByDeliveryTypeId(deliveryTypeMapper.toDeliveryType(payUOrderDTO.getDeliveryType()))
+            .paymentMethodByPaymentMethodId(paymentMethodMapper.toPaymentMethod(payUOrderDTO.getPaymentMethod()))
+            .totalAmount(totalAmount)
+            .orderStatusByOrderStatusId(orderStatus)
+            .customerByCustomerId(customer)
+            .build();
+
+    orderService.saveOrderAndCleanShoppingCart(order, customerId);
+
     PayUOrderRequest orderBody = PayUOrderRequest.builder()
-            .notifyUrl("hurtpol.com")
+            .notifyUrl("http://localhost:4200/")
+            .successCallback("http://localhost:4200/")
             .customerIp(ipAddress)
             .merchantPosId(posId)
-            .description("Hurtpol")
+            .description("Hurtpol - zakup sprzętu komputerowego")
             .currencyCode("PLN")
             .totalAmount(totalAmount)
             .products(products)

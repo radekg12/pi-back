@@ -1,7 +1,7 @@
 package com.example.userportal.service;
 
-import com.example.userportal.domain.DeliveryType;
+import com.example.userportal.service.dto.DeliveryTypeDTO;
 
 public interface DeliveryTypeService {
-  Iterable<DeliveryType> findAll();
+  Iterable<DeliveryTypeDTO> findAll();
 }

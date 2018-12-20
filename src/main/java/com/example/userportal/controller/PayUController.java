@@ -2,15 +2,15 @@ package com.example.userportal.controller;
 
 import com.example.userportal.RequestModel.PayUOrderResponseModel;
 import com.example.userportal.service.PayUClient;
+import com.example.userportal.service.dto.PayUOrderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
-@CrossOrigin(origins = {"http://localhost:4200", "http://192.168.0.55:4200", "http://192.168.0.55:8081", "http://localhost:8081"}, maxAge = 3600)
 @RestController
 @RequestMapping(value = "/payu")
 public class PayUController {
@@ -23,9 +23,9 @@ public class PayUController {
   }
 
   @PostMapping(value = "/make/payment")
-  public PayUOrderResponseModel makePayment(HttpServletRequest request) {
+  public PayUOrderResponseModel makePayment(@RequestBody PayUOrderDTO payUOrderDTO, HttpServletRequest request) {
     int customerId = 1;
-    return payUClient.payForOrder(customerId, request);
+    return payUClient.payForOrder(customerId, request, payUOrderDTO);
   }
 
 }

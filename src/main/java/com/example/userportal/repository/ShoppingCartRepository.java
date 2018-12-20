@@ -19,6 +19,8 @@ public interface ShoppingCartRepository extends CrudRepository<ShoppingCartPosit
 
   Optional<ShoppingCartPosition> findByCustomerIdAndProductId(int customerId, int productId);
 
-  void deleteShoppingCartPositionByCustomerByCustomerIdAndProductByProductId(int customerId, int productId);
+//  void deleteShoppingCartPositionByCustomerByCustomerIdAndProductByProductId(int customerId, int productId);
+
+  void deleteAllByCustomerId(int customerId);
 
 }

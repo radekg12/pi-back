@@ -13,6 +13,7 @@ public class PayUOrderRequest {
   private String merchantPosId;
   private String description;
   private String currencyCode;
+  private String successCallback;
   private int totalAmount;
   private List<PayUProduct> products;
 

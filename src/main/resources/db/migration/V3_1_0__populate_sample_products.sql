@@ -1,4 +1,4 @@
-INSERT INTO testdb.product (id, name, description, company, quantity_in_stock, unity_price, subcategory_id, image_url)
+INSERT INTO testdb.product (id, name, description, company, quantity_in_stock, unit_price, subcategory_id, image_url)
 VALUES (1, 'Microsoft Surface Pro m3-7Y30/4GB/128SSD/Win10P',
         'Surface Laptop to smukły, lekki i elegancki laptop, zapewniający wysoką wydajność pracy na klawiaturze obleczonej tkaniną Alcantara, ekranie dotykowym i baterii, która starcza na cały dzień.
 
@@ -41,10 +41,10 @@ Przewodnik „Szybki start”
 Dokumenty gwarancyjne i dotyczące bezpieczeństwa ', 1);
 
 
-----------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
 
-INSERT INTO testdb.product (id, name, description, company, quantity_in_stock, unity_price, subcategory_id, image_url)
+INSERT INTO testdb.product (id, name, description, company, quantity_in_stock, unit_price, subcategory_id, image_url)
 VALUES (2, 'MacBook Pro 15 2018 i9 32GB 4TB 560X 4GB Space',
         'Laptop z ekranem o przekątnej 13.3 cali oraz rozdzielczości 2560 x 1600 pikseli, wyposażony w procesor Intel Core i5-7360U o częstotliwości 2.3 GHz, pamięć RAM DDR4 o wielkości 8 GB. Dysk twardy SSD o pojemności 128GB. Karta graficzna to Intel Iris Plus 640. Zainstalowany system operacyjny to macOS Sierra.
 

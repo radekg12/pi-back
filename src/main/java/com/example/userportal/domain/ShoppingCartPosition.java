@@ -2,10 +2,12 @@ package com.example.userportal.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
 @Builder
+@Accessors(chain = true)
 @Data
 @Entity
 @EqualsAndHashCode

@@ -1,14 +1,12 @@
 package com.example.userportal.controller;
 
-import com.example.userportal.domain.Product;
 import com.example.userportal.service.ProductService;
+import com.example.userportal.service.dto.ProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = {"http://localhost:4200", "http://192.168.0.55:4200", "http://192.168.0.55:8081", "http://localhost:8081"}, maxAge = 3600)
 @RestController
-//@RequestMapping({"/api"})
 @RequestMapping({"/products"})
 public class ProductController {
 
@@ -20,29 +18,38 @@ public class ProductController {
   }
 
   @PostMapping
-  public Product create(@RequestBody Product product) {
-    return productService.create(product);
+  public ProductDTO create(@RequestBody ProductDTO productDto) {
+    return productService.create(productDto);
   }
 
-  @GetMapping(path = {"/{id}"})
-  public Product findOne(@PathVariable("id") int id) {
+  @GetMapping(path = {"/detail/{id}"})
+  public ProductDTO findOne(@PathVariable("id") int id) {
     return productService.findById(id);
   }
 
+
   @GetMapping
-  public Page<Product> findAllByPage(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
-                                     @RequestParam(value = "per_page", required = false, defaultValue = "2") int size,
-                                     @RequestParam(value = "sort_by", required = false, defaultValue = "id_asc") String sort) {
+  public Page<ProductDTO> findAllByPage(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                                        @RequestParam(value = "per_page", required = false, defaultValue = "2") int size,
+                                        @RequestParam(value = "sort_by", required = false, defaultValue = "unitPrice_asc") String sort) {
     return productService.findPaginated(page, size, sort);
   }
 
+  @GetMapping(path = {"/{subcategory}"})
+  public Page<ProductDTO> findAllByPage2(@PathVariable("subcategory") int subcategoryId,
+                                         @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                                         @RequestParam(value = "per_page", required = false, defaultValue = "2") int size,
+                                         @RequestParam(value = "sort_by", required = false, defaultValue = "unitPrice_asc") String sort) {
+    return productService.findSubcategoryPaginated(subcategoryId, page, size, sort);
+  }
+
   @PutMapping
-  public Product update(@RequestBody Product product) {
-    return productService.update(product);
+  public ProductDTO update(@RequestBody ProductDTO productDto) {
+    return productService.update(productDto);
   }
 
   @DeleteMapping(path = "/{id}")
-  public Product delete(@PathVariable("id") int id) {
+  public ProductDTO delete(@PathVariable("id") int id) {
     return productService.delete(id);
   }
 

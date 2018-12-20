@@ -1,13 +1,22 @@
 package com.example.userportal.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Collection;
 
+@Builder
+@Accessors(chain = true)
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "`order`", schema = "testdb")
 public class Order {
   @Id
   @Column(name = "id")
