@@ -24,4 +24,8 @@ public interface OrderStatusMapper {
 
   List<OrderStatus> toOrderStatuses(List<OrderStatusDTO> orderStatusDTOS);
 
+  Iterable<OrderStatusDTO> toOrderStatusDtos(Iterable<OrderStatus> orderStatuses);
+
+  Iterable<OrderStatus> toOrderStatuses(Iterable<OrderStatusDTO> orderStatusDTOS);
+
 }

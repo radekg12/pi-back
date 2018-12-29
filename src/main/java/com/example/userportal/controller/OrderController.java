@@ -4,9 +4,7 @@ package com.example.userportal.controller;
 import com.example.userportal.service.OrderService;
 import com.example.userportal.service.dto.OrderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping({"/orders"})
@@ -23,5 +21,24 @@ public class OrderController {
   public Iterable<OrderDTO> findAll() {
     int customerId = 1;
     return orderService.findAllByCustomerId(customerId);
+  }
+
+  @GetMapping(path = "/{id}")
+  public OrderDTO findAllById(
+          @PathVariable("id") int id) {
+    return orderService.findById(id);
+  }
+
+  @GetMapping(path = "/byCustomer/{id}")
+  public Iterable<OrderDTO> findAllByCustomerId(
+          @PathVariable("id") int customerId) {
+    return orderService.findAllByCustomerId(customerId);
+  }
+
+  @PostMapping(path = "/{id}")
+  public OrderDTO changeOrderStatus(
+          @PathVariable("id") int orderId,
+          @RequestParam(value = "statusId") int statusId) {
+    return orderService.updateStatus(orderId, statusId);
   }
 }

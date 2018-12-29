@@ -7,8 +7,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface OrderRepository extends CrudRepository<Order, Integer> {
 
-  @Query("SELECT o FROM Order o WHERE o.customerByCustomerId.id=:customerId")
+  @Query("SELECT o FROM Order o WHERE o.customerByCustomerId.id=:customerId ORDER BY o.dateOfOrder DESC")
   Iterable<Order> findAllByCustomerId(@Param("customerId") int customerId);
-
-
 }

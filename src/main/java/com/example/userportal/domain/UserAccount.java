@@ -1,5 +1,6 @@
 package com.example.userportal.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -21,6 +22,7 @@ public class UserAccount {
   @Column(name = "password")
   private String password;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "userAccountByUserAccountId")
   private Collection<Customer> customersById;
 

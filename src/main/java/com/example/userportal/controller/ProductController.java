@@ -23,10 +23,15 @@ public class ProductController {
   }
 
   @GetMapping(path = {"/detail/{id}"})
-  public ProductDTO findOne(@PathVariable("id") int id) {
+  public ProductDTO findOne(
+          @PathVariable("id") int id) {
     return productService.findById(id);
   }
 
+  @GetMapping(path = "all")
+  public Iterable<ProductDTO> findAll() {
+    return productService.findAll();
+  }
 
   @GetMapping
   public Page<ProductDTO> findAllByPage(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
@@ -44,18 +49,16 @@ public class ProductController {
   }
 
   @PutMapping
-  public ProductDTO update(@RequestBody ProductDTO productDto) {
+  public ProductDTO update(
+          @RequestBody ProductDTO productDto) {
     return productService.update(productDto);
   }
 
   @DeleteMapping(path = "/{id}")
-  public ProductDTO delete(@PathVariable("id") int id) {
+  public ProductDTO delete(
+          @PathVariable("id") int id) {
     return productService.delete(id);
   }
 
-//  @GetMapping
-//  public Iterable<User> findAll() {
-//    return productService.findAll();
-//  }
 
 }
