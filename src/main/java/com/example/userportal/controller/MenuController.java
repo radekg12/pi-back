@@ -5,6 +5,7 @@ import com.example.userportal.service.MenuService;
 import com.example.userportal.service.dto.ProductCategoryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,5 +23,10 @@ public class MenuController {
   @GetMapping
   public Iterable<ProductCategoryDTO> findAllByPage() {
     return menuService.findAll();
+  }
+
+  @GetMapping(path = "/subcategory/{id}")
+  public ProductCategoryDTO findBySubcategoryId(@PathVariable("id") int subcategoryId) {
+    return menuService.findBySubcategoryId(subcategoryId);
   }
 }

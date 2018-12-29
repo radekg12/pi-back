@@ -2,6 +2,7 @@ package com.example.userportal.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -27,11 +28,11 @@ public class Customer {
   @Column(name = "phone_number")
   private Integer phoneNumber;
 
-  @Column(name = "email")
+  @NaturalId
+  @Column(name = "email", unique = true)
   private String email;
 
-  @JsonIgnore
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "address_id", referencedColumnName = "id", nullable = false)
   private Address addressByAddressId;
 

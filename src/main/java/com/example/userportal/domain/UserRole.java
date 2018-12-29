@@ -1,5 +1,6 @@
 package com.example.userportal.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -18,6 +19,7 @@ public class UserRole {
   @Column(name = "role_name")
   private String roleName;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "userRoleByUserRoleId")
   private Collection<UserAccount> userAccountsById;
 }

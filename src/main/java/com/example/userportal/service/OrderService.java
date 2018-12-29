@@ -13,4 +13,8 @@ public interface OrderService {
 
   @Transactional
   void saveOrderAndCleanShoppingCart(Order order, int customerId);
+
+  OrderDTO findById(int id);
+
+  OrderDTO updateStatus(int orderId, int statusId);
 }

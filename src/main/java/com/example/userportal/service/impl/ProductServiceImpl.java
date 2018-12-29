@@ -48,10 +48,6 @@ public class ProductServiceImpl implements ProductService {
     return repository.count();
   }
 
-//  @Override
-//  public Iterable<ProductDTO> getPage(int page) {
-//    return repository.findAll(PageRequest.of(page, 20, Sort.Direction.DESC, "id"));
-//  }
 
   @Override
   public Page<ProductDTO> findPaginated(int page, int size, String sort) {
@@ -60,6 +56,18 @@ public class ProductServiceImpl implements ProductService {
     Sort.Direction sortDirection = sortBy[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
     Page<Product> productPage = repository.findAll(PageRequest.of(page, size, sortDirection, sortProperty));
     return mapper.toPageOfProductDtos(productPage);
+  }
+
+  @Override
+  public Iterable<ProductDTO> findAllProductsBySubcategory(int subcategoryId) {
+    Iterable<Product> products = repository.findAllByProductSubcategoryId(subcategoryId);
+    return mapper.toProductDtos(products);
+  }
+
+  @Override
+  public Iterable<ProductDTO> findAllProductsByCategory(int categoryId) {
+    Iterable<Product> products = repository.findAllByProductCategoryId(categoryId);
+    return mapper.toProductDtos(products);
   }
 
   @Override

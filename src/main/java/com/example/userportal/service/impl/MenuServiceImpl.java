@@ -23,4 +23,9 @@ public class MenuServiceImpl implements MenuService {
   public Iterable<ProductCategoryDTO> findAll() {
     return mapper.toProductCategoryDtos(repository.findAll());
   }
+
+  @Override
+  public ProductCategoryDTO findBySubcategoryId(int subcategoryId) {
+    return mapper.toProductCategoryDto(repository.findProductCategoryByProductSubcategoryId(subcategoryId));
+  }
 }
