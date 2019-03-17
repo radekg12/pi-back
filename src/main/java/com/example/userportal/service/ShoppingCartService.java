@@ -12,7 +12,6 @@ public interface ShoppingCartService {
 
   ShoppingCartPositionDTO getPosition(int customerId, int productId);
 
-
   ShoppingCartPositionDTO updatePositionQuantity(int customerId, int productId, int quantity);
 
   ShoppingCartPositionDTO deletePosition(int customerId, int productId);

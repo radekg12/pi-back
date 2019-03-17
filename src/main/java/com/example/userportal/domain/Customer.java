@@ -37,7 +37,7 @@ public class Customer {
   private Address addressByAddressId;
 
   @JsonIgnore
-  @ManyToOne
+  @OneToOne
   @JoinColumn(name = "user_account_id", referencedColumnName = "id", nullable = false)
   private UserAccount userAccountByUserAccountId;
 

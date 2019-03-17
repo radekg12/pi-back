@@ -24,7 +24,7 @@ public class Address {
 
 //  @JsonIgnore
 //  @OneToMany(mappedBy = "addressByAddressId")
-//  private Collection<Customer> customersById;
+//  private Collection<Customer> customerById;
 //
 //  @JsonIgnore
 //  @OneToMany(mappedBy = "addressByDeliveryAddressId")

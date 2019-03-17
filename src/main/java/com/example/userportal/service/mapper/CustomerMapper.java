@@ -1,5 +1,6 @@
 package com.example.userportal.service.mapper;
 
+import com.example.userportal.RequestModel.SignUpRequest;
 import com.example.userportal.domain.Customer;
 import com.example.userportal.service.dto.CustomerDTO;
 import org.mapstruct.Mapper;
@@ -29,5 +30,12 @@ public interface CustomerMapper {
   Iterable<CustomerDTO> toCustomerDtos(Iterable<Customer> customers);
 
   Iterable<Customer> toCustomers(Iterable<CustomerDTO> customerDTOS);
+
+  @Mapping(target = "userAccountByUserAccountId.username", source = "email")
+  @Mapping(target = "userAccountByUserAccountId.password", source = "password")
+  @Mapping(target = "addressByAddressId", source = "address")
+  @Mapping(target = "shoppingCartPositionsById", ignore = true)
+  @Mapping(target = "ordersById", ignore = true)
+  Customer toCustomer(SignUpRequest signUpRequest);
 
 }

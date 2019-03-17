@@ -15,6 +15,14 @@ import com.example.userportal.service.mapper.PaymentMethodMapper;
 import com.example.userportal.service.mapper.ProductMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,11 +30,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.sql.Timestamp;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,39 +78,34 @@ public class PayUClientImpl implements PayUClient {
     try {
       payUResponse = createPayment(customerId);
       orderResponse = completePayment(customerId, req, payUResponse, payUOrderDTO);
-    } catch (IOException | InterruptedException e) {
+    } catch (IOException e) {
       e.printStackTrace();
     }
     return orderResponse;
   }
 
   @Override
-  public PayUResponse createPayment(int customerId) throws IOException, InterruptedException {
+  public PayUResponse createPayment(int customerId) throws IOException {
     Map<String, String> parameters = new HashMap<>();
     parameters.put("grant_type", "client_credentials");
     parameters.put("client_id", clientId);
     parameters.put("client_secret", clientSecret);
 
-    HttpRequest request = HttpRequest.newBuilder()
-            .version(HttpClient.Version.HTTP_2)
-            .timeout(Duration.ofSeconds(10))
-            .uri(URI.create(buildUrlWithParams(PAYU_AUTHORIZE_URL, parameters)))
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .POST(HttpRequest.BodyPublishers.noBody())
-            .build();
-    HttpClient client = HttpClient.newHttpClient();
-
-    HttpResponse<String> result = client.send(request, HttpResponse.BodyHandlers.ofString());
-    result.body();
+    HttpClient request = HttpClientBuilder.create().build();
+    HttpPost post = new HttpPost(URI.create(buildUrlWithParams(PAYU_AUTHORIZE_URL, parameters)));
+    StringEntity entity = new StringEntity("", ContentType.APPLICATION_JSON);
+    post.setHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
+    post.setEntity(entity);
+    HttpResponse httpResponse = request.execute(post);
 
     Gson gson = new GsonBuilder().create();
-    PayUResponse response = gson.fromJson(result.body(), PayUResponse.class);
+    PayUResponse response = gson.fromJson(EntityUtils.toString(httpResponse.getEntity()), PayUResponse.class);
 
     return response;
   }
 
   @Override
-  public PayUOrderResponseModel completePayment(int customerId, HttpServletRequest req, PayUResponse payUResponse, PayUOrderDTO payUOrderDTO) throws IOException, InterruptedException {
+  public PayUOrderResponseModel completePayment(int customerId, HttpServletRequest req, PayUResponse payUResponse, PayUOrderDTO payUOrderDTO) throws IOException {
 
     Iterable<ShoppingCartPositionDTO> shoppingCartPositionDtos = shoppingCartService.getAllPositions(customerId);
 
@@ -175,18 +174,16 @@ public class PayUClientImpl implements PayUClient {
     String body = gson.toJson(orderBody);
 
 
-    HttpRequest request = HttpRequest.newBuilder()
-            .version(HttpClient.Version.HTTP_2)
-            .timeout(Duration.ofSeconds(10))
-            .uri(URI.create(PAYU_ORDERS_URL))
-            .headers("Content-Type", "application/json", "Authorization", payUResponse.getToken_type() + " " + payUResponse.getAccess_token())
-            .POST(HttpRequest.BodyPublishers.ofString(body))
-            .build();
-    HttpClient client = HttpClient.newHttpClient();
+    HttpClient request = HttpClientBuilder.create().build();
+    HttpPost post = new HttpPost(URI.create(PAYU_ORDERS_URL));
+    StringEntity entity = new StringEntity(body, ContentType.APPLICATION_JSON);
+    post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+    post.setHeader(HttpHeaders.AUTHORIZATION, payUResponse.getToken_type() + " " + payUResponse.getAccess_token());
+    post.setEntity(entity);
+    HttpResponse httpResponse = request.execute(post);
 
+    PayUOrderResponseModel response = gson.fromJson(EntityUtils.toString(httpResponse.getEntity()), PayUOrderResponseModel.class);
 
-    HttpResponse<String> result = client.send(request, HttpResponse.BodyHandlers.ofString());
-    PayUOrderResponseModel response = gson.fromJson(result.body(), PayUOrderResponseModel.class);
     return response;
   }
 

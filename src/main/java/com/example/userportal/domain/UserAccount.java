@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Collection;
 
 @Data
 @Entity
@@ -19,14 +18,15 @@ public class UserAccount {
   @Column(name = "username")
   private String username;
 
+  @JsonIgnore
   @Column(name = "password")
   private String password;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "userAccountByUserAccountId")
-  private Collection<Customer> customersById;
+  @OneToOne(mappedBy = "userAccountByUserAccountId")
+  private Customer customerById;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "user_role_id", referencedColumnName = "id", nullable = false)
   private UserRole userRoleByUserRoleId;
 

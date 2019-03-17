@@ -1,9 +1,11 @@
 package com.example.userportal.controller;
 
 import com.example.userportal.RequestModel.UpdateShoppingCartModel;
+import com.example.userportal.configuration.UserPrincipal;
 import com.example.userportal.service.ShoppingCartService;
 import com.example.userportal.service.dto.ShoppingCartPositionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,24 +20,32 @@ public class ShoppingCartController {
   }
 
   @PostMapping
-  public ShoppingCartPositionDTO add(@RequestBody int productId) {
-    return shoppingCartService.addPosition(1, productId);
+  public ShoppingCartPositionDTO add(@RequestBody int productId, Authentication authentication) {
+    UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+    int customerId = principal.getCustomerId();
+    return shoppingCartService.addPosition(customerId, productId);
   }
 
 
   @DeleteMapping(path = "/{id}")
-  public ShoppingCartPositionDTO delete(@PathVariable("id") int productId) {
-    return shoppingCartService.deletePosition(1, productId);
+  public ShoppingCartPositionDTO delete(@PathVariable("id") int productId, Authentication authentication) {
+    UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+    int customerId = principal.getCustomerId();
+    return shoppingCartService.deletePosition(customerId, productId);
   }
 
   @PutMapping
-  public ShoppingCartPositionDTO update(@RequestBody UpdateShoppingCartModel body) {
-    return shoppingCartService.updatePositionQuantity(1, body.getProductId(), body.getQuantity());
+  public ShoppingCartPositionDTO update(@RequestBody UpdateShoppingCartModel body, Authentication authentication) {
+    UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+    int customerId = principal.getCustomerId();
+    return shoppingCartService.updatePositionQuantity(customerId, body.getProductId(), body.getQuantity());
   }
 
   @GetMapping
-  public Iterable<ShoppingCartPositionDTO> findAll() {
-    return shoppingCartService.getAllPositions(1);
+  public Iterable<ShoppingCartPositionDTO> findAll(Authentication authentication) {
+    UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+    int customerId = principal.getCustomerId();
+    return shoppingCartService.getAllPositions(customerId);
   }
 
 }

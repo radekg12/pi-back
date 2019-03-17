@@ -1,0 +1,29 @@
+{
+  "properties": [
+    {
+      "name": "paypal.clientId",
+      "type": "java.lang.String",
+      "description": "Description for paypal.clientId."
+    },
+    {
+      "name": "paypal.clientSecret",
+      "type": "java.lang.String",
+      "description": "Description for paypal.clientSecret."
+    },
+    {
+      "name": "paypal.mode",
+      "type": "java.lang.String",
+      "description": "Description for paypal.mode."
+    },
+    {
+      "name": "payu.clientId",
+      "type": "java.lang.String",
+      "description": "Description for payu.clientId."
+    },
+    {
+      "name": "payu.clientSecret",
+      "type": "java.lang.String",
+      "description": "Description for payu.clientSecret."
+    }
+  ]
+}

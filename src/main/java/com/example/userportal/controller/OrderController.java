@@ -1,9 +1,11 @@
 package com.example.userportal.controller;
 
 
+import com.example.userportal.configuration.UserPrincipal;
 import com.example.userportal.service.OrderService;
 import com.example.userportal.service.dto.OrderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,8 +20,9 @@ public class OrderController {
   }
 
   @GetMapping
-  public Iterable<OrderDTO> findAll() {
-    int customerId = 1;
+  public Iterable<OrderDTO> findAll(Authentication authentication) {
+    UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+    int customerId = principal.getCustomerId();
     return orderService.findAllByCustomerId(customerId);
   }
 

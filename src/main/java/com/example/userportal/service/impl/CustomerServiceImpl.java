@@ -51,10 +51,15 @@ public class CustomerServiceImpl implements CustomerService {
   @Override
   public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
     Customer customer = mapper.toCustomer(customerDTO);
-    UserAccount account = userAccountRepository.findUserAccountByCustomersById(customer);
+    UserAccount account = userAccountRepository.findUserAccountByCustomerById(customer);
     customer.setUserAccountByUserAccountId(account);
     Customer saveCustomer = repository.save(customer);
     return mapper.toCustomerDto(saveCustomer);
+  }
+
+  @Override
+  public Customer saveCustomer(Customer customer) {
+    return repository.save(customer);
   }
 
 }

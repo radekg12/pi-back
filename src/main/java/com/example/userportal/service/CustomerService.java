@@ -14,4 +14,6 @@ public interface CustomerService {
   CustomerDTO getCustomerByOrder(int orderId);
 
   CustomerDTO saveCustomer(CustomerDTO customerDTO);
+
+  Customer saveCustomer(Customer customer);
 }
