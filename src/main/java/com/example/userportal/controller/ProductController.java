@@ -4,6 +4,7 @@ import com.example.userportal.service.ProductService;
 import com.example.userportal.service.dto.ProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,6 +18,7 @@ public class ProductController {
     this.productService = productService;
   }
 
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @PostMapping
   public ProductDTO create(@RequestBody ProductDTO productDto) {
     return productService.create(productDto);
@@ -48,12 +50,14 @@ public class ProductController {
     return productService.findSubcategoryPaginated(subcategoryId, page, size, sort);
   }
 
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @PutMapping
   public ProductDTO update(
           @RequestBody ProductDTO productDto) {
     return productService.update(productDto);
   }
 
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @DeleteMapping(path = "/{id}")
   public ProductDTO delete(
           @PathVariable("id") int id) {

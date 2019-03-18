@@ -5,7 +5,7 @@ import com.example.userportal.service.dto.OrderDTO;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface OrderService {
-  Iterable<Order> findAll();
+  Iterable<OrderDTO> findAll();
 
   Iterable<OrderDTO> findAllByCustomerId(int customerId);
 

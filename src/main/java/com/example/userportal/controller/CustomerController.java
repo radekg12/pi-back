@@ -5,6 +5,7 @@ import com.example.userportal.configuration.UserPrincipal;
 import com.example.userportal.service.CustomerService;
 import com.example.userportal.service.dto.CustomerDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,17 +27,18 @@ public class CustomerController {
     return customerService.getCustomerDTO(customerId);
   }
 
-  @GetMapping(path = "/{id}")
-  public CustomerDTO getCustomer(@PathVariable("id") int id) {
-    return customerService.getCustomerDTO(id);
-  }
-
-
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @GetMapping(path = "/all")
   public Iterable<CustomerDTO> getCustomers() {
     return customerService.getCustomerDTOs();
   }
 
+  @GetMapping(path = "/{id}")
+  public CustomerDTO getCustomer(@PathVariable("id") int id) {
+    return customerService.getCustomerDTO(id);
+  }
+
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @GetMapping(path = "/byOrderId/{id}")
   public CustomerDTO getCustomers(@PathVariable("id") int orderId) {
     return customerService.getCustomerByOrder(orderId);

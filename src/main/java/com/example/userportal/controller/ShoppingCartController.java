@@ -5,6 +5,7 @@ import com.example.userportal.configuration.UserPrincipal;
 import com.example.userportal.service.ShoppingCartService;
 import com.example.userportal.service.dto.ShoppingCartPositionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ public class ShoppingCartController {
     this.shoppingCartService = shoppingCartService;
   }
 
+  @PreAuthorize("hasRole('USER')")
   @PostMapping
   public ShoppingCartPositionDTO add(@RequestBody int productId, Authentication authentication) {
     UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();

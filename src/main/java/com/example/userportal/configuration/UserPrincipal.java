@@ -38,7 +38,7 @@ public class UserPrincipal implements UserDetails {
             user.getId(),
             user.getUsername(),
             user.getPassword(),
-            user.getCustomerById().getId(),
+            user.getCustomerById() != null ? user.getCustomerById().getId() : null,
             authorities
     );
   }

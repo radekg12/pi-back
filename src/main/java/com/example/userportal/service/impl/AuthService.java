@@ -63,7 +63,7 @@ public class AuthService {
 
     customer.getUserAccountByUserAccountId().setPassword(passwordEncoder.encode(customer.getUserAccountByUserAccountId().getPassword()));
 
-    UserRole userRole = userRoleRepository.findByRoleName("User")
+    UserRole userRole = userRoleRepository.findByRoleName("ROLE_USER")
             .orElseThrow(() -> new NotFoundException("Role not found"));
 
     customer.getUserAccountByUserAccountId().setUserRoleByUserRoleId(userRole);

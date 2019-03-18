@@ -30,10 +30,10 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
-  public Iterable<Order> findAll() {
-    return repository.findAll();
+  public Iterable<OrderDTO> findAll() {
+    Iterable<Order> orders = repository.findAll();
+    return mapper.toOrderDtos(orders);
   }
-
 
   @Override
   public Iterable<OrderDTO> findAllByCustomerId(int customerId) {
