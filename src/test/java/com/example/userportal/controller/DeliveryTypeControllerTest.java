@@ -34,7 +34,7 @@ public class DeliveryTypeControllerTest {
   private DeliveryTypeRepository repository;
 
   @Test
-  @WithMockUser(roles = "ROLE_ADMIN")
+  @WithMockUser(roles = "ADMIN")
   public void givenDeliveryTypes_whenGetDeliveryType_thenReturnJsonArray()
           throws Exception {
 
