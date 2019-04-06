@@ -2,6 +2,7 @@ package com.example.userportal.service;
 
 import com.example.userportal.configuration.RedisConfig;
 import com.example.userportal.domain.Product;
+import com.example.userportal.service.dto.ProductDTO;
 import com.example.userportal.service.impl.RecommendationServiceImpl;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -18,7 +19,7 @@ import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
-//This tests require to run redis server on localhost:6379
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = RedisConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -42,15 +43,15 @@ public class RecommendationServiceImplTest {
 
     @Test
     public void whenUpdatingRating_thenAvailableRecommendationForSingleProduct() {
-        List<Product> productList = new ArrayList<>();
-        List<Product> recommendationList = new ArrayList<>();
-        Product product = new Product().setId(1).setName("kiełba");
+        List<ProductDTO> productList = new ArrayList<>();
+        List<ProductDTO> recommendationList = new ArrayList<>();
+        ProductDTO product = new ProductDTO().setId(1).setName("kiełba");
         recommendationList.add(product);
 
-        productList.add(new Product().setId(0).setName("szynka"));
+        productList.add(new ProductDTO().setId(0).setName("szynka"));
         productList.add(product);
-        productList.add(new Product().setId(2).setName("ser"));
-        productList.add(new Product().setId(3).setName("mleko"));
+        productList.add(new ProductDTO().setId(2).setName("ser"));
+        productList.add(new ProductDTO().setId(3).setName("mleko"));
 
         RecommendationServiceImpl recommendationService = new RecommendationServiceImpl(redisTemplate);
         recommendationService.addProductsRating(productList);
@@ -64,15 +65,15 @@ public class RecommendationServiceImplTest {
 
     @Test
     public void whenUpdatingRating_thenAvailableRecommendationForMultipleProduct() {
-        List<Product> productList = new ArrayList<>();
-        List<Product> recommendationList = new ArrayList<>();
-        Product product1 = new Product().setId(1).setName("kiełba");
-        Product product2 = new Product().setId(0).setName("szynka");
+        List<ProductDTO> productList = new ArrayList<>();
+        List<ProductDTO> recommendationList = new ArrayList<>();
+        ProductDTO product1 = new ProductDTO().setId(1).setName("kiełba");
+        ProductDTO product2 = new ProductDTO().setId(0).setName("szynka");
         recommendationList.add(product1);
         recommendationList.add(product2);
 
-        productList.add(new Product().setId(2).setName("ser"));
-        productList.add(new Product().setId(3).setName("mleko"));
+        productList.add(new ProductDTO().setId(2).setName("ser"));
+        productList.add(new ProductDTO().setId(3).setName("mleko"));
         productList.add(product1);
         productList.add(product2);
 
