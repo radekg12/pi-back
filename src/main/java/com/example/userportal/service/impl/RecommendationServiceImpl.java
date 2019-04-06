@@ -1,6 +1,5 @@
 package com.example.userportal.service.impl;
 
-import com.example.userportal.domain.Product;
 import com.example.userportal.service.dto.ProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,9 +22,9 @@ public class RecommendationServiceImpl {
         return String.format("product:%d:purchased_with", id);
     }
 
-    public void addProductsRating(Collection<Product> products) {
-        for (Product product : products) {
-            for (Product withProduct : products) {
+    public void addProductsRating(Collection<ProductDTO> products) {
+        for (ProductDTO product : products) {
+            for (ProductDTO withProduct : products) {
                 if (!withProduct.equals(product)) {
                     redisTemplate.boundZSetOps(this.getProductKey(product.getId()))
                             .incrementScore(Integer.toString(withProduct.getId()), 1);

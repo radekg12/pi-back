@@ -3,11 +3,12 @@ package com.example.userportal.service.impl;
 import com.example.userportal.domain.Order;
 import com.example.userportal.domain.OrderPosition;
 import com.example.userportal.domain.OrderStatus;
-import com.example.userportal.domain.Product;
 import com.example.userportal.repository.*;
 import com.example.userportal.service.OrderService;
 import com.example.userportal.service.dto.OrderDTO;
+import com.example.userportal.service.dto.ProductDTO;
 import com.example.userportal.service.mapper.OrderMapper;
+import com.example.userportal.service.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
   private final OrderStatusRepository orderStatusRepository;
   private final OrderMapper mapper;
   private final RecommendationServiceImpl recommendationService;
+  private final ProductMapper productMapper;
 
   @Override
   public Iterable<OrderDTO> findAll() {
@@ -52,9 +54,10 @@ public class OrderServiceImpl implements OrderService {
     order.getOrderPositionsById().forEach(p -> p.setOrderByOrderId(saveOrder));
     orderPositionRepository.saveAll(order.getOrderPositionsById());
     shoppingCartRepository.deleteAllByCustomerId(customerId);
-    List<Product> products = order.getOrderPositionsById()
+    List<ProductDTO> products = order.getOrderPositionsById()
             .stream()
             .map(OrderPosition::getProductByProductId)
+            .map(productMapper::toProductDto)
             .collect(Collectors.toList());
     recommendationService.addProductsRating(products);
   }
