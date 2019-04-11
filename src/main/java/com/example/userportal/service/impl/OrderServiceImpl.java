@@ -1,15 +1,23 @@
 package com.example.userportal.service.impl;
 
 import com.example.userportal.domain.Order;
+import com.example.userportal.domain.OrderPosition;
 import com.example.userportal.domain.OrderStatus;
 import com.example.userportal.repository.*;
 import com.example.userportal.service.OrderService;
 import com.example.userportal.service.dto.OrderDTO;
+import com.example.userportal.service.dto.ProductDTO;
 import com.example.userportal.service.mapper.OrderMapper;
+import com.example.userportal.service.mapper.ProductMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderServiceImpl implements OrderService {
 
   private final OrderRepository repository;
@@ -18,16 +26,8 @@ public class OrderServiceImpl implements OrderService {
   private final ProductRepository productRepository;
   private final OrderStatusRepository orderStatusRepository;
   private final OrderMapper mapper;
-
-  @Autowired
-  public OrderServiceImpl(OrderRepository repository, OrderPositionRepository orderPositionRepository, ShoppingCartRepository shoppingCartRepository, ProductRepository productRepository, OrderStatusRepository orderStatusRepository, OrderMapper mapper) {
-    this.repository = repository;
-    this.orderPositionRepository = orderPositionRepository;
-    this.shoppingCartRepository = shoppingCartRepository;
-    this.productRepository = productRepository;
-    this.orderStatusRepository = orderStatusRepository;
-    this.mapper = mapper;
-  }
+  private final RecommendationServiceImpl recommendationService;
+  private final ProductMapper productMapper;
 
   @Override
   public Iterable<OrderDTO> findAll() {
@@ -54,6 +54,12 @@ public class OrderServiceImpl implements OrderService {
     order.getOrderPositionsById().forEach(p -> p.setOrderByOrderId(saveOrder));
     orderPositionRepository.saveAll(order.getOrderPositionsById());
     shoppingCartRepository.deleteAllByCustomerId(customerId);
+    List<ProductDTO> products = order.getOrderPositionsById()
+            .stream()
+            .map(OrderPosition::getProductByProductId)
+            .map(productMapper::toProductDto)
+            .collect(Collectors.toList());
+    recommendationService.addProductsRating(products);
   }
 
   @Override
