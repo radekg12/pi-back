@@ -1,11 +1,9 @@
 package com.example.userportal.service.impl;
 
-import com.example.userportal.RequestModel.PayUOrderRequest;
-import com.example.userportal.RequestModel.PayUOrderResponseModel;
-import com.example.userportal.RequestModel.PayUProduct;
-import com.example.userportal.RequestModel.PayUResponse;
 import com.example.userportal.domain.*;
+import com.example.userportal.requestmodel.payu.*;
 import com.example.userportal.service.*;
+import com.example.userportal.service.dto.OrderDTO;
 import com.example.userportal.service.dto.PayUOrderDTO;
 import com.example.userportal.service.dto.ProductDTO;
 import com.example.userportal.service.dto.ShoppingCartPositionDTO;
@@ -15,6 +13,7 @@ import com.example.userportal.service.mapper.PaymentMethodMapper;
 import com.example.userportal.service.mapper.ProductMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -23,58 +22,62 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PayUClientImpl implements PayUClient {
-  private static final String PAYU_AUTHORIZE_URL = "https://secure.snd.payu.com/pl/standard/user/oauth/authorize";
-  private static final String PAYU_ORDERS_URL = "https://secure.snd.payu.com/api/v2_1/orders/";
+  private final Logger log = LoggerFactory.getLogger(getClass());
   private final ShoppingCartService shoppingCartService;
   private final OrderService orderService;
   private final CustomerService customerService;
   private final OrderStatusService orderStatusService;
   private final AddressService addressService;
+
+  private final ProductMapper productMapper;
+  private final AddressMapper addressMapper;
+  private final DeliveryTypeMapper deliveryTypeMapper;
+  private final PaymentMethodMapper paymentMethodMapper;
+
   @Value("${payu.clientId}")
   private String clientId;
   @Value("${payu.clientSecret}")
   private String clientSecret;
   @Value("${payu.pos_id}")
   private String posId;
-  private ProductMapper productMapper;
-  private AddressMapper addressMapper;
-  private DeliveryTypeMapper deliveryTypeMapper;
-  private PaymentMethodMapper paymentMethodMapper;
+  @Value("${payu.secondKey}")
+  private String secondKey;
+  @Value("${payu.authorizeUrl}")
+  private String authorizeUrl;
+  @Value("${payu.ordersUrl}")
+  private String ordersUrl;
+  @Value("${payu.continueUrl}")
+  private String continueUrl;
+  @Value("${payu.notifyUrl}")
+  private String notifyUrl;
 
-  @Autowired
-  public PayUClientImpl(ShoppingCartService shoppingCartService, OrderService orderService, CustomerService customerService, OrderStatusService orderStatusService, AddressService addressService, ProductMapper productMapper, AddressMapper addressMapper, DeliveryTypeMapper deliveryTypeMapper, PaymentMethodMapper paymentMethodMapper) {
-    this.shoppingCartService = shoppingCartService;
-    this.orderService = orderService;
-    this.customerService = customerService;
-    this.orderStatusService = orderStatusService;
-    this.addressService = addressService;
-    this.productMapper = productMapper;
-    this.addressMapper = addressMapper;
-    this.deliveryTypeMapper = deliveryTypeMapper;
-    this.paymentMethodMapper = paymentMethodMapper;
-  }
 
   @Override
-  public PayUOrderResponseModel payForOrder(int customerId, HttpServletRequest req, PayUOrderDTO payUOrderDTO) {
+  public PayUOrderCreateResponse payForOrder(int customerId, HttpServletRequest req, PayUOrderDTO payUOrderDTO) {
     PayUResponse payUResponse;
-    PayUOrderResponseModel orderResponse = null;
+    PayUOrderCreateResponse orderResponse = null;
     try {
       payUResponse = createPayment(customerId);
       orderResponse = completePayment(customerId, req, payUResponse, payUOrderDTO);
@@ -92,7 +95,7 @@ public class PayUClientImpl implements PayUClient {
     parameters.put("client_secret", clientSecret);
 
     HttpClient request = HttpClientBuilder.create().build();
-    HttpPost post = new HttpPost(URI.create(buildUrlWithParams(PAYU_AUTHORIZE_URL, parameters)));
+    HttpPost post = new HttpPost(URI.create(buildUrlWithParams(authorizeUrl, parameters)));
     StringEntity entity = new StringEntity("", ContentType.APPLICATION_JSON);
     post.setHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
     post.setEntity(entity);
@@ -104,31 +107,70 @@ public class PayUClientImpl implements PayUClient {
     return response;
   }
 
+  private String buildParams(Map<String, String> params) {
+    return params.entrySet().stream()
+            .map(e -> e.getKey() + "=" + e.getValue())
+            .collect(Collectors.joining("&", "?", ""));
+  }
+
+  private String buildUrlWithParams(String url, Map<String, String> params) {
+    return url + buildParams(params);
+  }
+
   @Override
-  public PayUOrderResponseModel completePayment(int customerId, HttpServletRequest req, PayUResponse payUResponse, PayUOrderDTO payUOrderDTO) throws IOException {
+  @Transactional
+  public PayUOrderCreateResponse completePayment(int customerId, HttpServletRequest req, PayUResponse payUResponse, PayUOrderDTO payUOrderDTO) throws IOException {
 
     Iterable<ShoppingCartPositionDTO> shoppingCartPositionDtos = shoppingCartService.getAllPositions(customerId);
 
-    List<PayUProduct> products = new ArrayList<>();
-    shoppingCartPositionDtos.forEach(p -> {
-      ProductDTO product = p.getProduct();
-      PayUProduct payUProduct = PayUProduct.builder()
-              .name(product.getName())
-              .unitPrice(product.getUnitPrice())
-              .quantity(p.getQuantity())
-              .build();
-      products.add(payUProduct);
-    });
-
-    int totalAmount = products.stream()
-            .map(x -> x.getQuantity() * x.getUnitPrice())
-            .reduce((x, y) -> x + y)
-            .orElse(0);
-    totalAmount += payUOrderDTO.getDeliveryType().getPrice();
-    totalAmount += payUOrderDTO.getPaymentMethod().getPrice();
-
+    List<PayUProduct> payUProducts = createPayUProductList(shoppingCartPositionDtos);
+    int totalAmount = calculateTotalAmount(payUProducts, payUOrderDTO);
     String ipAddress = req.getRemoteAddr();
+    OrderStatus orderStatus = orderStatusService.getStatusById(1);
+    Customer customer = customerService.getCustomer(customerId);
+    Address address = addressService.save(addressMapper.toAddress(payUOrderDTO.getAddress()));
+    Order order = saveOrder(shoppingCartPositionDtos, payUOrderDTO, customer, address, orderStatus, totalAmount);
 
+    PayUOrderCreateRequest orderCreateRequest = PayUOrderCreateRequest.builder()
+            .extOrderId(order.getId())
+            .continueUrl(continueUrl)
+            .notifyUrl(notifyUrl)
+            .customerIp(ipAddress)
+            .merchantPosId(posId)
+            .description("Hurtpol - zakup sprzętu komputerowego")
+            .currencyCode("PLN")
+            .totalAmount(totalAmount)
+            .products(payUProducts.toArray(new PayUProduct[0]))
+            .buyer(Buyer.builder()
+                    .email(customer.getEmail())
+                    .phone(customer.getPhoneNumber())
+                    .firstName(customer.getFirstName())
+                    .lastName(customer.getLastName())
+                    .language("pl")
+                    .build())
+            .settings(Settings.builder()
+                    .invoiceDisabled(true)
+                    .build())
+            .build();
+
+
+    Gson gson = new GsonBuilder().create();
+    String body = gson.toJson(orderCreateRequest);
+
+    HttpClient request = HttpClientBuilder.create().build();
+    HttpPost post = new HttpPost(URI.create(ordersUrl));
+    StringEntity entity = new StringEntity(body, ContentType.APPLICATION_JSON);
+    post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+    post.setHeader(HttpHeaders.AUTHORIZATION, payUResponse.getToken_type() + " " + payUResponse.getAccess_token());
+    post.setEntity(entity);
+    HttpResponse httpResponse = request.execute(post);
+
+    PayUOrderCreateResponse orderCreateResponse = gson.fromJson(EntityUtils.toString(httpResponse.getEntity()), PayUOrderCreateResponse.class);
+
+    return orderCreateResponse;
+  }
+
+  private Order saveOrder(Iterable<ShoppingCartPositionDTO> shoppingCartPositionDtos, PayUOrderDTO payUOrderDTO, Customer customer, Address address, OrderStatus orderStatus, int totalAmount) {
     List<OrderPosition> orderProducts = new ArrayList<>();
     shoppingCartPositionDtos.forEach(p -> {
       ProductDTO productDto = p.getProduct();
@@ -139,11 +181,6 @@ public class PayUClientImpl implements PayUClient {
               .build();
       orderProducts.add(orderPosition);
     });
-
-    OrderStatus orderStatus = orderStatusService.getStatusById(1);
-    Customer customer = customerService.getCustomer(customerId);
-    Address address = addressService.save(addressMapper.toAddress(payUOrderDTO.getAddress()));
-
 
     Order order = Order.builder()
             .dateOfOrder(Timestamp.valueOf(LocalDateTime.now()))
@@ -157,43 +194,105 @@ public class PayUClientImpl implements PayUClient {
             .customerByCustomerId(customer)
             .build();
 
-    orderService.saveOrderAndCleanShoppingCart(order, customerId);
+    orderService.saveOrderAndCleanShoppingCart(order, customer.getId());
+    return order;
+  }
 
-    PayUOrderRequest orderBody = PayUOrderRequest.builder()
-            .notifyUrl("http://localhost:4200/")
-            .successCallback("http://localhost:4200/")
-            .customerIp(ipAddress)
-            .merchantPosId(posId)
-            .description("Hurtpol - zakup sprzętu komputerowego")
-            .currencyCode("PLN")
-            .totalAmount(totalAmount)
-            .products(products)
-            .build();
+  private List<PayUProduct> createPayUProductList(Iterable<ShoppingCartPositionDTO> shoppingCartPositionDtos) {
+    ArrayList<PayUProduct> products = new ArrayList<>();
+    shoppingCartPositionDtos.forEach(p -> {
+      ProductDTO product = p.getProduct();
+      PayUProduct payUProduct = PayUProduct.builder()
+              .name(product.getName())
+              .unitPrice(product.getUnitPrice())
+              .quantity(p.getQuantity())
+              .build();
+      products.add(payUProduct);
+    });
+    return products;
+  }
+
+  private int calculateTotalAmount(List<PayUProduct> payUProducts, PayUOrderDTO payUOrderDTO) {
+    Integer total = payUProducts.stream()
+            .map(x -> x.getQuantity() * x.getUnitPrice())
+            .reduce(Integer::sum)
+            .orElse(0);
+    total += payUOrderDTO.getDeliveryType().getPrice();
+    total += payUOrderDTO.getPaymentMethod().getPrice();
+    return total;
+  }
+
+  @Override
+  public OrderDTO finalizePayment(String signatureHeader, PayUOrderNotifyRequest notify) {
+    log.info("PAYU NOTIFY");
+    log.info(signatureHeader);
+    log.info(notify.getOrder().getStatus().name());
+    log.info(notify.getOrder().getExtOrderId());
+
+    boolean verifed = signatureNotificationIsVerified(signatureHeader, notify);
+
+    OrderDTO order = null;
+    switch (notify.getOrder().getStatus()) {
+      case PENDING:
+      case CANCELED:
+        order = orderService.updateStatus(Integer.parseInt(notify.getOrder().getExtOrderId()), 5);
+        break;
+      case COMPLETED:
+        order = orderService.updateStatus(Integer.parseInt(notify.getOrder().getExtOrderId()), 2);
+        break;
+    }
+    return order;
+  }
+
+  public boolean signatureNotificationIsVerified(String signatureHeader, PayUOrderNotifyRequest notify) {
+    Map<String, String> signatures = Arrays.stream(signatureHeader.split(";"))
+            .map(value -> value.split("="))
+            .collect(Collectors.toMap(split -> split[0], split -> split[1]));
+
+    String incomingSignature = signatures.get("signature");
 
     Gson gson = new GsonBuilder().create();
-    String body = gson.toJson(orderBody);
+    String jsonNotification = gson.toJson(notify);
+    String concatenated = jsonNotification + secondKey;
+    String expectedSignature = encodeMd5(concatenated);
 
+    try {
+      boolean isTrue = givenPassword_whenHashing_thenVerifying(incomingSignature, concatenated);
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
+    }
 
-    HttpClient request = HttpClientBuilder.create().build();
-    HttpPost post = new HttpPost(URI.create(PAYU_ORDERS_URL));
-    StringEntity entity = new StringEntity(body, ContentType.APPLICATION_JSON);
-    post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-    post.setHeader(HttpHeaders.AUTHORIZATION, payUResponse.getToken_type() + " " + payUResponse.getAccess_token());
-    post.setEntity(entity);
-    HttpResponse httpResponse = request.execute(post);
-
-    PayUOrderResponseModel response = gson.fromJson(EntityUtils.toString(httpResponse.getEntity()), PayUOrderResponseModel.class);
-
-    return response;
+    if (expectedSignature.equals(incomingSignature)) {
+      log.info("Correct signature");
+      return true;
+    } else {
+      log.info("Wrong signature");
+      return false;
+    }
   }
 
-  private String buildParams(Map<String, String> params) {
-    return params.entrySet().stream()
-            .map(e -> e.getKey() + "=" + e.getValue())
-            .collect(Collectors.joining("&", "?", ""));
+  private String encodeMd5(String concatenated) {
+    String md5;
+    try {
+      MessageDigest md = MessageDigest.getInstance("MD5");
+      md.update(concatenated.getBytes());
+      byte[] digest = md.digest();
+      md5 = new BigInteger(1, digest).toString(16);
+      return md5;
+    } catch (NoSuchAlgorithmException e) {
+      return "";
+    }
   }
 
-  private String buildUrlWithParams(String url, Map<String, String> params) {
-    return url + buildParams(params);
+  public boolean givenPassword_whenHashing_thenVerifying(String hash, String myString)
+          throws NoSuchAlgorithmException {
+
+    MessageDigest md = MessageDigest.getInstance("MD5");
+    md.update(myString.getBytes());
+    byte[] digest = md.digest();
+    String myHash = DatatypeConverter
+            .printHexBinary(digest).toUpperCase();
+
+    return (myHash.equals(hash));
   }
 }

@@ -12,11 +12,10 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerDTO {
-  private int id;
-  private String companyName;
+  private Integer id;
   private String firstName;
   private String lastName;
-  private Integer phoneNumber;
+  private String phoneNumber;
   private String email;
   private AddressDTO address;
 }

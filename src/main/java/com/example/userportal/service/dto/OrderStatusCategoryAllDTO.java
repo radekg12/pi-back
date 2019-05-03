@@ -14,7 +14,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderStatusCategoryAllDTO {
-  private int id;
+  private Integer id;
   private String name;
   private Collection<OrderStatusDTO> orderStatuses;
 }

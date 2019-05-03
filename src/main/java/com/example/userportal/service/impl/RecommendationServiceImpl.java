@@ -1,16 +1,19 @@
 package com.example.userportal.service.impl;
 
+import com.example.userportal.service.RecommendationService;
 import com.example.userportal.service.dto.ProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 @Service
-public class RecommendationServiceImpl {
+public class RecommendationServiceImpl implements RecommendationService {
     private RedisTemplate<String, String> redisTemplate;
 
     @Autowired
@@ -22,6 +25,7 @@ public class RecommendationServiceImpl {
         return String.format("product:%d:purchased_with", id);
     }
 
+    @Override
     public void addProductsRating(Collection<ProductDTO> products) {
         for (ProductDTO product : products) {
             for (ProductDTO withProduct : products) {
@@ -33,7 +37,8 @@ public class RecommendationServiceImpl {
         }
     }
 
-    public Set<String> getRecommendation(Collection<ProductDTO> products, int maxResults) {
+    @Override
+    public Set<String> getRecommendation(Collection<ProductDTO> products, int maxResults) throws RedisConnectionFailureException {
         if (products.size() == 1) {
             ProductDTO head = products.iterator().next();
             return redisTemplate.boundZSetOps(this.getProductKey(head.getId())).reverseRange(0, maxResults);
@@ -47,7 +52,7 @@ public class RecommendationServiceImpl {
             products.forEach(product -> productsIds.add(Integer.toString(product.getId())));
             productsIds.remove(Integer.toString(headId));
             redisTemplate.opsForZSet().unionAndStore(getProductKey(headId), productsIds, tmp_key);
-            redisTemplate.boundZSetOps(tmp_key).remove(productsIds.toArray(new String[productsIds.size()]));
+            redisTemplate.boundZSetOps(tmp_key).remove(productsIds.toArray(new String[0]));
             Set<String> recommendations = redisTemplate.boundZSetOps(tmp_key).reverseRange(0, maxResults);
             redisTemplate.delete(tmp_key);
             return recommendations;

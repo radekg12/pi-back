@@ -1,11 +1,13 @@
-INSERT INTO testdb.product (id, name, description, company, quantity_in_stock, unit_price, subcategory_id, image_url)
+INSERT INTO testdb.product (id, name, description, company, logical_quantity_in_stock, physical_quantity_in_stock,
+                            unit_price, subcategory_id, image_url, available, created_by, last_modified_by)
 VALUES (1, 'Microsoft Surface Pro m3-7Y30/4GB/128SSD/Win10P',
         'Surface Laptop to smukły, lekki i elegancki laptop, zapewniający wysoką wydajność pracy na klawiaturze obleczonej tkaniną Alcantara, ekranie dotykowym i baterii, która starcza na cały dzień.
 
 
 Nowy Surface Pro stanowi połączenie najlepszego w swojej klasie laptopa z wszechstronnym komputerem typu all-in-one i tabletem.Oszałamiający ekran PixelSense obsługuje pióro Surface i funkcje dotykowe, a 13, 5 godziny pracy baterii wystarczy, by pracować cały dzień i grać całą noc.',
-        'Microsoft', 58, 359900, 4,
-        'https://stat-m2.ms-online.pl/media/cache/gallery/rc/cfcrh0yi/images/20/20716176/microsoft-surface-laptop-platinum-2.jpg');
+        'Microsoft', 58, 58, 359900, 4,
+        'https://cdn.x-kom.pl/i/setup/images/prod/big/product-large,,2019/1/pr_2019_1_9_12_24_29_305_01.jpg', true,
+        'system', 'system');
 
 
 INSERT INTO testdb.specification_position (name, value, product_id)
@@ -44,14 +46,17 @@ Dokumenty gwarancyjne i dotyczące bezpieczeństwa ', 1);
 # ----------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------
 
-INSERT INTO testdb.product (id, name, description, company, quantity_in_stock, unit_price, subcategory_id, image_url)
+INSERT INTO testdb.product (id, name, description, company, logical_quantity_in_stock, physical_quantity_in_stock,
+                            unit_price, subcategory_id, image_url,
+                            available, created_by, last_modified_by)
 VALUES (2, 'MacBook Pro 15 2018 i9 32GB 4TB 560X 4GB Space',
         'Laptop z ekranem o przekątnej 13.3 cali oraz rozdzielczości 2560 x 1600 pikseli, wyposażony w procesor Intel Core i5-7360U o częstotliwości 2.3 GHz, pamięć RAM DDR4 o wielkości 8 GB. Dysk twardy SSD o pojemności 128GB. Karta graficzna to Intel Iris Plus 640. Zainstalowany system operacyjny to macOS Sierra.
 
 
 Macbook Pro niezmiennie urzeka swoją ponadczasową stylistyką. Mocne komponenty jak na tak kompaktową obudowę pozwolą Wam wejść w ekosystem firmy Apple ze stylem, a jeżeli jest to kolejny Macbook w Waszej kolekcji z pewnością nie zawiedziecie się na nim.',
-        'Apple', 58, 579885, 4,
-        'https://media.sweetwater.com/api/i/f-webp__q-82__ha-a239a191f23f359f__hmac-49654ca0214849603de76a092e533c8e99cae588/images/items/750/MBP15T22G256-large.jpg');
+        'Apple', 58, 58, 579885, 4,
+        'https://cdn.x-kom.pl/i/setup/images/prod/big/product-large,,pr_2016_10_28_14_8_29_883.jpg', true, 'system',
+        'system');
 
 
 INSERT INTO testdb.specification_position (name, value, product_id)

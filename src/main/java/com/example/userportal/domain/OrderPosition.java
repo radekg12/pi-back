@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Builder
 @Accessors(chain = true)
@@ -16,17 +17,17 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "order_position", schema = "testdb")
-public class OrderPosition {
+public class OrderPosition implements Serializable {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Integer id;
 
   @Column(name = "quantity")
-  private int quantity;
+  private Integer quantity;
 
   @Column(name = "unit_price")
-  private int unitPrice;
+  private Integer unitPrice;
 
   @ManyToOne
   @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)

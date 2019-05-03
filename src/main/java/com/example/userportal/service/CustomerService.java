@@ -3,6 +3,8 @@ package com.example.userportal.service;
 import com.example.userportal.domain.Customer;
 import com.example.userportal.service.dto.CustomerDTO;
 
+import java.util.Optional;
+
 public interface CustomerService {
 
   Customer getCustomer(int id);
@@ -13,7 +15,11 @@ public interface CustomerService {
 
   CustomerDTO getCustomerByOrder(int orderId);
 
-  CustomerDTO saveCustomer(CustomerDTO customerDTO);
+  CustomerDTO updateCustomer(CustomerDTO customerDTO);
 
-  Customer saveCustomer(Customer customer);
+  Customer updateCustomer(Customer customer);
+
+  Optional<Customer> findOneByEmail(String email);
+
+  boolean existsByEmail(String email);
 }

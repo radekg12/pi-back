@@ -5,24 +5,25 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Collection;
 
 @Data
 @Accessors(chain = true)
 @Entity
 @Table(name = "delivery_type", schema = "testdb")
-public class DeliveryType {
+public class DeliveryType implements Serializable {
 
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Integer id;
 
   @Column(name = "name")
   private String name;
 
   @Column(name = "price")
-  private int price;
+  private Integer price;
 
   @JsonIgnore
   @OneToMany(mappedBy = "deliveryTypeByDeliveryTypeId")

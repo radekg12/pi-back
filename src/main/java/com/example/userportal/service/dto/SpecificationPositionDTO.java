@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpecificationPositionDTO {
-  private int id;
+  private Integer id;
   private String name;
   private String value;
 

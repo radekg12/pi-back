@@ -1,14 +1,17 @@
 package com.example.userportal.controller;
 
-import com.example.userportal.RequestModel.JwtAuthenticationResponse;
-import com.example.userportal.RequestModel.SignInRequest;
-import com.example.userportal.RequestModel.SignUpRequest;
-import com.example.userportal.service.impl.AuthService;
+import com.example.userportal.requestmodel.JwtAuthenticationResponse;
+import com.example.userportal.requestmodel.SignInRequest;
+import com.example.userportal.requestmodel.SignUpRequest;
+import com.example.userportal.service.dto.CustomerDTO;
+import com.example.userportal.service.impl.AuthServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 
 @RestController
@@ -16,15 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-  final AuthService authService;
+  final AuthServiceImpl authService;
 
   @PostMapping("/signin")
-  public JwtAuthenticationResponse authenticateUser(@RequestBody SignInRequest signInRequest) {
+  public JwtAuthenticationResponse authenticateUser(@Valid @RequestBody SignInRequest signInRequest) {
     return authService.authenticateUser(signInRequest);
   }
 
   @PostMapping("/signup")
-  public boolean registerUser(@RequestBody SignUpRequest signUpRequest) {
+  public CustomerDTO registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
     return authService.registerUser(signUpRequest);
   }
 }
