@@ -5,8 +5,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface CustomerRepository extends CrudRepository<Customer, Integer> {
 
   @Query("SELECT o.customerByCustomerId FROM Order o WHERE o.id=:orderId")
   Customer findCustomerByOrderId(@Param("orderId") int orderId);
+
+  Optional<Customer> findOneByEmailIgnoreCase(String email);
+
+  Optional<Customer> findOneWithAuthoritiesById(Integer id);
+
+  Optional<Customer> findOneWithAuthoritiesByEmail(String email);
+
+  boolean existsByEmail(String email);
 }

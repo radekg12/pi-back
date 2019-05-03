@@ -1,6 +1,7 @@
 package com.example.userportal.service.impl;
 
 import com.example.userportal.service.EmailService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
@@ -12,14 +13,9 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmailServiceImpl implements EmailService {
-
   public final JavaMailSender emailSender;
-
-  @Autowired
-  public EmailServiceImpl(JavaMailSender emailSender) {
-    this.emailSender = emailSender;
-  }
 
   @Override
   public void sendSimpleMessage(

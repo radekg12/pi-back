@@ -9,12 +9,12 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 @SpringBootApplication(scanBasePackages = {"com.example.userportal.*"})
 public class UserPortalApplication extends SpringBootServletInitializer {
 
+  public static void main(String[] args) {
+    SpringApplication.run(UserPortalApplication.class, args);
+  }
+
   @Override
   protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
     return application.sources(UserPortalApplication.class);
-  }
-
-  public static void main(String[] args) {
-    SpringApplication.run(UserPortalApplication.class, args);
   }
 }

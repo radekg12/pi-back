@@ -15,10 +15,10 @@ import java.util.Collection;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDTO {
-  private int id;
+  private Integer id;
   private Timestamp dateOfOrder;
   private Timestamp dateOfDelivery;
-  private int totalAmount;
+  private Integer totalAmount;
 
   private OrderStatusDTO orderStatus;
   private DeliveryTypeDTO deliveryType;

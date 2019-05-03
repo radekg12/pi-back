@@ -20,7 +20,7 @@ public class DeliveryTypeController {
   }
 
   @GetMapping
-  public Iterable<DeliveryTypeDTO> findAllByPage() {
+  public Iterable<DeliveryTypeDTO> findAll() {
     return deliveryService.findAll();
   }
 }

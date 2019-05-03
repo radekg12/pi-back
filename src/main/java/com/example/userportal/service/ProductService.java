@@ -23,4 +23,6 @@ public interface ProductService {
   Page<ProductDTO> findPaginated(int page, int size, String sort);
 
   ProductDTO update(ProductDTO productDto);
+
+  ProductDTO updatePhysicalQuantity(int productId, int quantity);
 }

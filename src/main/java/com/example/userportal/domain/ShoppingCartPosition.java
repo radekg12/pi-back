@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Builder
 @Accessors(chain = true)
@@ -15,12 +16,12 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table(name = "shopping_cart_position", schema = "testdb")
 @ToString
-public class ShoppingCartPosition {
+public class ShoppingCartPosition implements Serializable {
 
   @Id
   @Column(name = "id", nullable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Integer id;
 
   @Column(name = "quantity", nullable = false)
   private int quantity;

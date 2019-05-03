@@ -12,8 +12,8 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressDTO {
-  private int id;
+  private Integer id;
   private String street;
   private String city;
-  private int postcode;
+  private String postcode;
 }

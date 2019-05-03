@@ -2,14 +2,17 @@ package com.example.userportal.service.impl;
 
 import com.example.userportal.domain.Order;
 import com.example.userportal.domain.OrderStatus;
+import com.example.userportal.exception.InternalServerErrorException;
 import com.example.userportal.repository.*;
 import com.example.userportal.service.OrderService;
 import com.example.userportal.service.dto.OrderDTO;
 import com.example.userportal.service.mapper.OrderMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderServiceImpl implements OrderService {
 
   private final OrderRepository repository;
@@ -18,16 +21,6 @@ public class OrderServiceImpl implements OrderService {
   private final ProductRepository productRepository;
   private final OrderStatusRepository orderStatusRepository;
   private final OrderMapper mapper;
-
-  @Autowired
-  public OrderServiceImpl(OrderRepository repository, OrderPositionRepository orderPositionRepository, ShoppingCartRepository shoppingCartRepository, ProductRepository productRepository, OrderStatusRepository orderStatusRepository, OrderMapper mapper) {
-    this.repository = repository;
-    this.orderPositionRepository = orderPositionRepository;
-    this.shoppingCartRepository = shoppingCartRepository;
-    this.productRepository = productRepository;
-    this.orderStatusRepository = orderStatusRepository;
-    this.mapper = mapper;
-  }
 
   @Override
   public Iterable<OrderDTO> findAll() {
@@ -58,14 +51,19 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   public OrderDTO findById(int id) {
-    Order order = repository.findById(id).orElse(null);
+    Order order = repository.findById(id)
+            .orElseThrow(() -> new InternalServerErrorException("Order id=" + id + " could not be found"));
     return mapper.toOrderDto(order);
   }
 
   @Override
   public OrderDTO updateStatus(int orderId, int statusId) {
-    Order order = repository.findById(orderId).orElse(null);
-    OrderStatus status = orderStatusRepository.findById(statusId).orElse(null);
+    Order order = repository
+            .findById(orderId)
+            .orElseThrow(() -> new InternalServerErrorException("Order id=" + orderId + " could not be found"));
+    OrderStatus status = orderStatusRepository
+            .findById(statusId)
+            .orElseThrow(() -> new InternalServerErrorException("Status id=" + statusId + " could not be found"));
     order.setOrderStatusByOrderStatusId(status);
     return mapper.toOrderDto(repository.save(order));
   }

@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping({"/products"})
 public class ProductController {
@@ -20,7 +22,7 @@ public class ProductController {
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @PostMapping
-  public ProductDTO create(@RequestBody ProductDTO productDto) {
+  public ProductDTO create(@Valid @RequestBody ProductDTO productDto) {
     return productService.create(productDto);
   }
 
@@ -51,9 +53,23 @@ public class ProductController {
   }
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PostMapping({"/warehouse/take/{id}"})
+  public ProductDTO takeProductFromWarehouse(@PathVariable("id") int id,
+                                             @RequestParam(value = "quantity") int quantity) {
+    return productService.updatePhysicalQuantity(id, quantity);
+  }
+
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PostMapping({"/warehouse/put/{id}"})
+  public ProductDTO putProductToWarehouse(@PathVariable("id") int id,
+                                          @RequestParam(value = "quantity") int quantity) {
+    return productService.updatePhysicalQuantity(id, quantity * (-1));
+  }
+
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @PutMapping
   public ProductDTO update(
-          @RequestBody ProductDTO productDto) {
+          @Valid @RequestBody ProductDTO productDto) {
     return productService.update(productDto);
   }
 

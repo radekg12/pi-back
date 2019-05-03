@@ -13,8 +13,8 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 public class ShoppingCartPositionDTO {
 
-  private int id;
-  private int quantity;
+  private Integer id;
+  private Integer quantity;
 
   private ProductDTO product;
 }

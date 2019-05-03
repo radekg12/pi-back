@@ -12,6 +12,6 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductSubcategoryDTO {
-  private int id;
+  private Integer id;
   private String name;
 }

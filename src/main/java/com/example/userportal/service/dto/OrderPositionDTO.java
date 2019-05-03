@@ -12,8 +12,8 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderPositionDTO {
-  private int id;
-  private int quantity;
-  private int unitPrice;
+  private Integer id;
+  private Integer quantity;
+  private Integer unitPrice;
   private ProductDTO product;
 }

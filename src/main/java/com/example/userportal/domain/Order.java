@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -17,11 +18,11 @@ import java.util.Collection;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "`order`", schema = "testdb")
-public class Order {
+public class Order implements Serializable {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Integer id;
 
   @Column(name = "date_of_order")
   private Timestamp dateOfOrder;

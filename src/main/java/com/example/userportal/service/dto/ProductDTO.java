@@ -9,17 +9,19 @@ import lombok.experimental.Accessors;
 import java.util.Collection;
 
 @Data
-@Builder
+
 @Accessors(chain = true)
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDTO {
-  private int id;
+  private Integer id;
   private String name;
   private String description;
   private String company;
-  private int quantityInStock;
-  private int unitPrice;
+  private Integer physicalQuantityInStock;
+  private Integer logicalQuantityInStock;
+  private Integer unitPrice;
   private String imageUrl;
 
   private ProductSubcategoryDTO subcategory;

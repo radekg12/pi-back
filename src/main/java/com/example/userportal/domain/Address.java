@@ -1,17 +1,22 @@
 package com.example.userportal.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
 @Entity
-public class Address {
+public class Address extends AbstractAuditingEntity implements Serializable {
 
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Integer id;
 
   @Column(name = "street")
   private String street;
@@ -20,7 +25,7 @@ public class Address {
   private String city;
 
   @Column(name = "postcode")
-  private int postcode;
+  private String postcode;
 
 //  @JsonIgnore
 //  @OneToMany(mappedBy = "addressByAddressId")

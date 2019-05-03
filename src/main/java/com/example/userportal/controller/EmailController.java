@@ -6,9 +6,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping({"/support"})
@@ -25,14 +28,16 @@ public class EmailController {
     this.templateEngine = templateEngine;
   }
 
+  @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping
   public String getMail() {
     Gson gson = new GsonBuilder().create();
     return gson.toJson(mail);
   }
 
+  @PreAuthorize("hasRole('ROLE_USER')")
   @PostMapping
-  public String send(@RequestBody SupportDTO supportDTO) {
+  public String send(@Valid @RequestBody SupportDTO supportDTO) {
     Context context = new Context();
     context.setVariable("header", "Nowa prośba wsparcia");
     context.setVariable("title", supportDTO.getMailTitle());

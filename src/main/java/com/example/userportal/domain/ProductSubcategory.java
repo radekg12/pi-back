@@ -4,17 +4,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Collection;
 
 @Data
 @Entity
 @Table(name = "product_subcategory", schema = "testdb")
-public class ProductSubcategory {
+public class ProductSubcategory implements Serializable {
 
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Integer id;
 
   @Column(name = "subcategory_name")
   private String name;

@@ -12,6 +12,6 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderStatusCategoryDTO {
-  private int id;
+  private Integer id;
   private String name;
 }

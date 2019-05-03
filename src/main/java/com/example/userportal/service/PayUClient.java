@@ -1,7 +1,9 @@
 package com.example.userportal.service;
 
-import com.example.userportal.RequestModel.PayUOrderResponseModel;
-import com.example.userportal.RequestModel.PayUResponse;
+import com.example.userportal.requestmodel.payu.PayUOrderCreateResponse;
+import com.example.userportal.requestmodel.payu.PayUOrderNotifyRequest;
+import com.example.userportal.requestmodel.payu.PayUResponse;
+import com.example.userportal.service.dto.OrderDTO;
 import com.example.userportal.service.dto.PayUOrderDTO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,9 +11,11 @@ import java.io.IOException;
 
 public interface PayUClient {
 
-  PayUOrderResponseModel payForOrder(int customerId, HttpServletRequest req, PayUOrderDTO payUOrderDTO);
+  PayUOrderCreateResponse payForOrder(int customerId, HttpServletRequest req, PayUOrderDTO payUOrderDTO);
 
-  PayUResponse createPayment(int customerId) throws IOException, InterruptedException;
+  PayUResponse createPayment(int customerId) throws IOException;
 
-  PayUOrderResponseModel completePayment(int customerId, HttpServletRequest req, PayUResponse payUResponse, PayUOrderDTO payUOrderDTO) throws IOException, InterruptedException;
+  PayUOrderCreateResponse completePayment(int customerId, HttpServletRequest req, PayUResponse payUResponse, PayUOrderDTO payUOrderDTO) throws IOException;
+
+  OrderDTO finalizePayment(String signatureHeader, PayUOrderNotifyRequest notify);
 }
