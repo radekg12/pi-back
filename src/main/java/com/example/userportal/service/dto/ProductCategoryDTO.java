@@ -14,7 +14,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductCategoryDTO {
-  private int id;
+  private Integer id;
   private String name;
 
   private Collection<ProductSubcategoryDTO> subcategories;

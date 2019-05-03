@@ -1,8 +1,14 @@
 package com.example.userportal.configuration;
 
+import com.example.userportal.security.CustomUserDetailsService;
+import com.example.userportal.security.jwt.JwtAuthenticationEntryPoint;
+import com.example.userportal.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,12 +20,18 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 @Configuration
+@EnableJpaRepositories("com.example.userportal.repository")
+@EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware")
+@EnableTransactionManagement
 @EnableWebSecurity
+@Import(SecurityProblemSupport.class)
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity(
         securedEnabled = true,
@@ -28,8 +40,8 @@ import org.springframework.web.filter.CorsFilter;
 )
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-  final CustomUserDetailsService customUserDetailsService;
-
+  final private SecurityProblemSupport problemSupport;
+  final private CustomUserDetailsService customUserDetailsService;
   final private JwtAuthenticationEntryPoint unauthorizedHandler;
 
   @Bean
@@ -64,6 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .disable()
             .exceptionHandling()
             .authenticationEntryPoint(unauthorizedHandler)
+            .accessDeniedHandler(problemSupport)
             .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -79,7 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/**/*.css",
                     "/**/*.js")
             .permitAll()
-            .antMatchers("/auth/**", "/menu/**", "/products/**")
+            .antMatchers("/auth/**", "/menu/**", "/products/**", "/payu/notify")
             .permitAll()
             .anyRequest()
             .authenticated();
@@ -95,9 +108,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     config.setAllowCredentials(true);
     config.addAllowedHeader("*");
     config.addAllowedOrigin("*");
-//    config.addAllowedOrigin("http://localhost:4200");
-//    config.addAllowedOrigin("http://192.168.43.23:4200");
-//    config.addAllowedOrigin("http://192.168.43.23:8081");
     config.addAllowedMethod("OPTIONS");
     config.addAllowedMethod("GET");
     config.addAllowedMethod("POST");

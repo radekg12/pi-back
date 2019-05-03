@@ -4,5 +4,4 @@ import com.example.userportal.domain.OrderStatus;
 import org.springframework.data.repository.CrudRepository;
 
 public interface OrderStatusRepository extends CrudRepository<OrderStatus, Integer> {
-  OrderStatus findByNameIsLike(String name);
 }

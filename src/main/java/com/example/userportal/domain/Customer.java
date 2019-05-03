@@ -2,22 +2,35 @@ package com.example.userportal.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
 @Entity
-public class Customer {
+public class Customer extends AbstractAuditingEntity implements Serializable {
 
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Integer id;
 
-  @Column(name = "company_name")
-  private String companyName;
+  @NaturalId
+  @Email
+  @Column(name = "email", unique = true)
+  private String email;
+
+  @Column(name = "password_hash")
+  private String passwordHash;
 
   @Column(name = "first_name")
   private String firstName;
@@ -26,20 +39,14 @@ public class Customer {
   private String lastName;
 
   @Column(name = "phone_number")
-  private Integer phoneNumber;
+  private String phoneNumber;
 
-  @NaturalId
-  @Column(name = "email", unique = true)
-  private String email;
+  @Column(name = "activated")
+  private Boolean activated = true;
 
   @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "address_id", referencedColumnName = "id", nullable = false)
   private Address addressByAddressId;
-
-  @JsonIgnore
-  @OneToOne
-  @JoinColumn(name = "user_account_id", referencedColumnName = "id", nullable = false)
-  private UserAccount userAccountByUserAccountId;
 
   @JsonIgnore
   @OneToMany(mappedBy = "customerByCustomerId")
@@ -49,4 +56,11 @@ public class Customer {
   @OneToMany(mappedBy = "customerByCustomerId")
   private Collection<ShoppingCartPosition> shoppingCartPositionsById;
 
+  @JsonIgnore
+  @ManyToMany
+  @JoinTable(
+          name = "customer_authority",
+          joinColumns = {@JoinColumn(name = "customer_id", referencedColumnName = "id")},
+          inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")})
+  private Set<Authority> authorities = new HashSet<>();
 }

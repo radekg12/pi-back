@@ -17,7 +17,7 @@ public interface ShoppingCartRepository extends CrudRepository<ShoppingCartPosit
 
   Iterable<ShoppingCartPosition> findByCustomerId(int customerId);
 
-  @Query("SELECT c.shoppingCartPositionsById FROM Customer c WHERE c.userAccountByUserAccountId.username=:username")
+  @Query("SELECT c.shoppingCartPositionsById FROM Customer c WHERE c.email=:username")
   Iterable<ShoppingCartPosition> findByUsername(@Param("username") String username);
 
   Optional<ShoppingCartPosition> findByCustomerByCustomerIdAndProductByProductId(Customer customerByCustomerId, Product productByProductId);

@@ -3,15 +3,16 @@ package com.example.userportal.service.impl;
 import com.example.userportal.domain.Order;
 import com.example.userportal.domain.OrderPosition;
 import com.example.userportal.domain.OrderStatus;
+import com.example.userportal.exception.InternalServerErrorException;
 import com.example.userportal.repository.*;
 import com.example.userportal.service.OrderService;
 import com.example.userportal.service.dto.OrderDTO;
 import com.example.userportal.service.dto.ProductDTO;
 import com.example.userportal.service.mapper.OrderMapper;
-import com.example.userportal.service.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
   private final ProductRepository productRepository;
   private final OrderStatusRepository orderStatusRepository;
   private final OrderMapper mapper;
+
   private final RecommendationServiceImpl recommendationService;
   private final ProductMapper productMapper;
 
@@ -46,6 +48,7 @@ public class OrderServiceImpl implements OrderService {
     return repository.save(order);
   }
 
+  @Transactional
   @Override
   public void saveOrderAndCleanShoppingCart(Order order, int customerId) {
     Order saveOrder = repository.save(order);
@@ -54,6 +57,7 @@ public class OrderServiceImpl implements OrderService {
     order.getOrderPositionsById().forEach(p -> p.setOrderByOrderId(saveOrder));
     orderPositionRepository.saveAll(order.getOrderPositionsById());
     shoppingCartRepository.deleteAllByCustomerId(customerId);
+
     List<ProductDTO> products = order.getOrderPositionsById()
             .stream()
             .map(OrderPosition::getProductByProductId)
@@ -64,14 +68,19 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   public OrderDTO findById(int id) {
-    Order order = repository.findById(id).orElse(null);
+    Order order = repository.findById(id)
+            .orElseThrow(() -> new InternalServerErrorException("Order id=" + id + " could not be found"));
     return mapper.toOrderDto(order);
   }
 
   @Override
   public OrderDTO updateStatus(int orderId, int statusId) {
-    Order order = repository.findById(orderId).orElse(null);
-    OrderStatus status = orderStatusRepository.findById(statusId).orElse(null);
+    Order order = repository
+            .findById(orderId)
+            .orElseThrow(() -> new InternalServerErrorException("Order id=" + orderId + " could not be found"));
+    OrderStatus status = orderStatusRepository
+            .findById(statusId)
+            .orElseThrow(() -> new InternalServerErrorException("Status id=" + statusId + " could not be found"));
     order.setOrderStatusByOrderStatusId(status);
     return mapper.toOrderDto(repository.save(order));
   }

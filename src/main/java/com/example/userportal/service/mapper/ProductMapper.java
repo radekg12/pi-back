@@ -15,7 +15,6 @@ public interface ProductMapper {
   @Mapping(target = "subcategory", source = "productSubcategory")
   ProductDTO toProductDto(Product product);
 
-
   @Mapping(target = "productSubcategory", source = "subcategory")
   @Mapping(target = "orderPositions", ignore = true)
   @Mapping(target = "shoppingCartPositions", ignore = true)

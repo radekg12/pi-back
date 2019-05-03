@@ -16,8 +16,7 @@
         <class>com.example.userportal.domain.ProductSubcategory</class>
         <class>com.example.userportal.domain.ShoppingCartPosition</class>
         <class>com.example.userportal.domain.SpecificationPosition</class>
-        <class>com.example.userportal.domain.UserAccount</class>
-        <class>com.example.userportal.domain.UserRole</class>
+        <class>com.example.userportal.domain.Authority</class>
         <properties>
             <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/testdb"/>
             <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>

@@ -1,7 +1,7 @@
 package com.example.userportal.controller;
 
 
-import com.example.userportal.configuration.UserPrincipal;
+import com.example.userportal.security.jwt.UserPrincipal;
 import com.example.userportal.service.OrderService;
 import com.example.userportal.service.dto.OrderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +26,16 @@ public class OrderController {
     return orderService.findAll();
   }
 
+  @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping
   public Iterable<OrderDTO> findMyOrders(Authentication authentication) {
     UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-    int customerId = principal.getCustomerId();
+    int customerId = principal.getId();
     return orderService.findAllByCustomerId(customerId);
   }
 
   @GetMapping(path = "/{id}")
-  public OrderDTO findAllById(
+  public OrderDTO findById(
           @PathVariable("id") int id) {
     return orderService.findById(id);
   }

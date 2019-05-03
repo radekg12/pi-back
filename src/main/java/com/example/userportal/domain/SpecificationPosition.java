@@ -4,16 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @Entity
 @Table(name = "specification_position", schema = "testdb")
-public class SpecificationPosition {
+public class SpecificationPosition implements Serializable {
 
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Integer id;
 
   @Column(name = "name")
   private String name;

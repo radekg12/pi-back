@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentMethodDTO {
-  private int id;
+  private Integer id;
   private String name;
-  private int price;
+  private Integer price;
 }
