@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = RedisConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class RecommendationServiceImplTest {
+public class RecommendationServiceTest {
 
     private static redis.embedded.RedisServer redisServer;
 

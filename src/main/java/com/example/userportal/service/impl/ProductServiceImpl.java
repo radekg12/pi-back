@@ -6,19 +6,19 @@ import com.example.userportal.exception.InternalServerErrorException;
 import com.example.userportal.repository.ProductRepository;
 import com.example.userportal.repository.SpecificationPositionRepository;
 import com.example.userportal.service.ProductService;
+import com.example.userportal.service.RecommendationService;
 import com.example.userportal.service.dto.ProductDTO;
 import com.example.userportal.service.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -28,6 +28,7 @@ public class ProductServiceImpl implements ProductService {
 
   private final ProductRepository repository;
   private final SpecificationPositionRepository specificationPositionRepository;
+  private final RecommendationService recommendationService;
   private final ProductMapper mapper;
 
 
@@ -70,11 +71,20 @@ public class ProductServiceImpl implements ProductService {
 
 
   @Override
-  public Page<ProductDTO> findPaginated(int page, int size, String sort) {
-    String[] sortBy = sort.split("_");
-    String sortProperty = sortBy[0];
-    Sort.Direction sortDirection = sortBy[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-    Page<Product> productPage = repository.findAll(PageRequest.of(page, size, sortDirection, sortProperty));
+  public Page<ProductDTO> findPaginated(Pageable pageRequest) {
+    Page<Product> productPage = repository.findAll(pageRequest);
+    return mapper.toPageOfProductDtos(productPage);
+  }
+
+  @Override
+  public Page<ProductDTO> findCategoryPaginated(int categoryId, Pageable pageRequest) {
+    Page<Product> productPage = repository.findProductsByProductCategoryId(categoryId, pageRequest);
+    return mapper.toPageOfProductDtos(productPage);
+  }
+
+  @Override
+  public Page<ProductDTO> findSubcategoryPaginated(int subcategoryId, Pageable pageRequest) {
+    Page<Product> productPage = repository.findProductsByProductSubcategoryId(subcategoryId, pageRequest);
     return mapper.toPageOfProductDtos(productPage);
   }
 
@@ -88,15 +98,6 @@ public class ProductServiceImpl implements ProductService {
   public Iterable<ProductDTO> findAllProductsByCategory(int categoryId) {
     Iterable<Product> products = repository.findAllByProductCategoryId(categoryId);
     return mapper.toProductDtos(products);
-  }
-
-  @Override
-  public Page<ProductDTO> findSubcategoryPaginated(int subcategoryId, int page, int size, String sort) {
-    String[] sortBy = sort.split("_");
-    String sortProperty = sortBy[0];
-    Sort.Direction sortDirection = sortBy[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-    Page<Product> productPage = repository.findProductsByProductSubcategoryId(subcategoryId, PageRequest.of(page, size, sortDirection, sortProperty));
-    return mapper.toPageOfProductDtos(productPage);
   }
 
   @Override
@@ -140,5 +141,18 @@ public class ProductServiceImpl implements ProductService {
       repository.save(p);
     });
     return mapper.toProductDto(product.orElseThrow(() -> new InternalServerErrorException("Product id=" + productId + " could not be found")));
+  }
+
+  @Override
+  public List<ProductDTO> getProductRecommendation(int productId) throws RedisConnectionFailureException {
+    ProductDTO product = findById(productId);
+    List<ProductDTO> productDTOList = new ArrayList<>();
+    productDTOList.add(product);
+    Set<String> recommendations = this.recommendationService.getRecommendation(productDTOList, 8);
+    return recommendations
+            .stream()
+            .mapToInt(Integer::parseInt)
+            .mapToObj(this::findById)
+            .collect(Collectors.toList());
   }
 }

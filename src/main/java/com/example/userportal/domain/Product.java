@@ -12,7 +12,6 @@ import java.util.Collection;
 
 @Data
 @Accessors(chain = true)
-@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity
 public class Product extends AbstractAuditingEntity implements Serializable {

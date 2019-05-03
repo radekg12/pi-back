@@ -9,6 +9,7 @@ import com.example.userportal.service.OrderService;
 import com.example.userportal.service.dto.OrderDTO;
 import com.example.userportal.service.dto.ProductDTO;
 import com.example.userportal.service.mapper.OrderMapper;
+import com.example.userportal.service.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
