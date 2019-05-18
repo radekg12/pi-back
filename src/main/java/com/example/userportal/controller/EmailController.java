@@ -26,7 +26,7 @@ public class EmailController {
   @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping
   public String getCompanyMail() {
-    return companyMail;
+    return new Gson().toJson(companyMail);
   }
 
   @PreAuthorize("hasRole('ROLE_USER')")
