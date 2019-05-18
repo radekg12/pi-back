@@ -2,17 +2,19 @@ package com.example.userportal.service;
 
 import com.example.userportal.service.dto.ShoppingCartPositionDTO;
 
+import java.util.List;
+
 public interface ShoppingCartService {
 
-  ShoppingCartPositionDTO addPosition(int customerId, int productId);
+  ShoppingCartPositionDTO addPosition(int productId);
 
   ShoppingCartPositionDTO getPosition(int id);
 
-  Iterable<ShoppingCartPositionDTO> getAllPositions(int customerId);
+  List<ShoppingCartPositionDTO> getAllCurrentCustomerPositions();
 
   ShoppingCartPositionDTO getPosition(int customerId, int productId);
 
-  ShoppingCartPositionDTO updatePositionQuantity(int customerId, int productId, int quantity);
+  ShoppingCartPositionDTO updatePositionQuantity(int productId, int quantity);
 
-  ShoppingCartPositionDTO deletePosition(int customerId, int productId);
+  ShoppingCartPositionDTO deletePosition(int productId);
 }

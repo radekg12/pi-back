@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping({"/deliveryType"})
 public class DeliveryTypeController {
@@ -20,7 +22,7 @@ public class DeliveryTypeController {
   }
 
   @GetMapping
-  public Iterable<DeliveryTypeDTO> findAll() {
+  public List<DeliveryTypeDTO> findAll() {
     return deliveryService.findAll();
   }
 }

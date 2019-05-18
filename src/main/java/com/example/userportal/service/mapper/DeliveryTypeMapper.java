@@ -21,8 +21,4 @@ public interface DeliveryTypeMapper {
   List<DeliveryTypeDTO> toDeliveryTypeDtos(List<DeliveryType> deliveryTypes);
 
   List<DeliveryType> toDeliveryTypes(List<DeliveryTypeDTO> deliveryTypeDTOS);
-
-  Iterable<DeliveryTypeDTO> toDeliveryTypeDtos(Iterable<DeliveryType> deliveryTypes);
-
-  Iterable<DeliveryType> toDeliveryTypes(Iterable<DeliveryTypeDTO> deliveryTypeDTOS);
 }

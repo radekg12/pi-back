@@ -2,6 +2,7 @@ package com.example.userportal.service.impl;
 
 import com.example.userportal.domain.*;
 import com.example.userportal.requestmodel.payu.*;
+import com.example.userportal.security.SecurityUtils;
 import com.example.userportal.service.*;
 import com.example.userportal.service.dto.OrderDTO;
 import com.example.userportal.service.dto.PayUOrderDTO;
@@ -14,26 +15,18 @@ import com.example.userportal.service.mapper.ProductMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.RequiredArgsConstructor;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.DatatypeConverter;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
@@ -75,36 +68,24 @@ public class PayUClientImpl implements PayUClient {
 
 
   @Override
-  public PayUOrderCreateResponse payForOrder(int customerId, HttpServletRequest req, PayUOrderDTO payUOrderDTO) {
+  public PayUOrderCreateResponse payForOrder(HttpServletRequest req, PayUOrderDTO payUOrderDTO) {
+    Integer customerId = SecurityUtils.getCurrentUserId();
     PayUResponse payUResponse;
-    PayUOrderCreateResponse orderResponse = null;
-    try {
-      payUResponse = createPayment(customerId);
-      orderResponse = completePayment(customerId, req, payUResponse, payUOrderDTO);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return orderResponse;
+    payUResponse = createPayment(customerId);
+    return completePayment(req, payUResponse, payUOrderDTO);
   }
 
   @Override
-  public PayUResponse createPayment(int customerId) throws IOException {
+  public PayUResponse createPayment(int customerId) {
     Map<String, String> parameters = new HashMap<>();
     parameters.put("grant_type", "client_credentials");
     parameters.put("client_id", clientId);
     parameters.put("client_secret", clientSecret);
 
-    HttpClient request = HttpClientBuilder.create().build();
-    HttpPost post = new HttpPost(URI.create(buildUrlWithParams(authorizeUrl, parameters)));
-    StringEntity entity = new StringEntity("", ContentType.APPLICATION_JSON);
-    post.setHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
-    post.setEntity(entity);
-    HttpResponse httpResponse = request.execute(post);
-
-    Gson gson = new GsonBuilder().create();
-    PayUResponse response = gson.fromJson(EntityUtils.toString(httpResponse.getEntity()), PayUResponse.class);
-
-    return response;
+    return new RestTemplate().postForObject(
+            buildUrlWithParams(authorizeUrl, parameters),
+            "",
+            PayUResponse.class);
   }
 
   private String buildParams(Map<String, String> params) {
@@ -119,9 +100,10 @@ public class PayUClientImpl implements PayUClient {
 
   @Override
   @Transactional
-  public PayUOrderCreateResponse completePayment(int customerId, HttpServletRequest req, PayUResponse payUResponse, PayUOrderDTO payUOrderDTO) throws IOException {
+  public PayUOrderCreateResponse completePayment(HttpServletRequest req, PayUResponse payUResponse, PayUOrderDTO payUOrderDTO) {
 
-    Iterable<ShoppingCartPositionDTO> shoppingCartPositionDtos = shoppingCartService.getAllPositions(customerId);
+    Integer customerId = SecurityUtils.getCurrentUserId();
+    List<ShoppingCartPositionDTO> shoppingCartPositionDtos = shoppingCartService.getAllCurrentCustomerPositions();
 
     List<PayUProduct> payUProducts = createPayUProductList(shoppingCartPositionDtos);
     int totalAmount = calculateTotalAmount(payUProducts, payUOrderDTO);
@@ -153,24 +135,17 @@ public class PayUClientImpl implements PayUClient {
                     .build())
             .build();
 
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(HttpHeaders.AUTHORIZATION, payUResponse.getToken_type() + " " + payUResponse.getAccess_token());
+    HttpEntity<PayUOrderCreateRequest> request = new HttpEntity<>(orderCreateRequest, headers);
 
-    Gson gson = new GsonBuilder().create();
-    String body = gson.toJson(orderCreateRequest);
-
-    HttpClient request = HttpClientBuilder.create().build();
-    HttpPost post = new HttpPost(URI.create(ordersUrl));
-    StringEntity entity = new StringEntity(body, ContentType.APPLICATION_JSON);
-    post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-    post.setHeader(HttpHeaders.AUTHORIZATION, payUResponse.getToken_type() + " " + payUResponse.getAccess_token());
-    post.setEntity(entity);
-    HttpResponse httpResponse = request.execute(post);
-
-    PayUOrderCreateResponse orderCreateResponse = gson.fromJson(EntityUtils.toString(httpResponse.getEntity()), PayUOrderCreateResponse.class);
-
-    return orderCreateResponse;
+    return new RestTemplate().postForObject(
+            ordersUrl,
+            request,
+            PayUOrderCreateResponse.class);
   }
 
-  private Order saveOrder(Iterable<ShoppingCartPositionDTO> shoppingCartPositionDtos, PayUOrderDTO payUOrderDTO, Customer customer, Address address, OrderStatus orderStatus, int totalAmount) {
+  private Order saveOrder(List<ShoppingCartPositionDTO> shoppingCartPositionDtos, PayUOrderDTO payUOrderDTO, Customer customer, Address address, OrderStatus orderStatus, int totalAmount) {
     List<OrderPosition> orderProducts = new ArrayList<>();
     shoppingCartPositionDtos.forEach(p -> {
       ProductDTO productDto = p.getProduct();
@@ -198,7 +173,7 @@ public class PayUClientImpl implements PayUClient {
     return order;
   }
 
-  private List<PayUProduct> createPayUProductList(Iterable<ShoppingCartPositionDTO> shoppingCartPositionDtos) {
+  private List<PayUProduct> createPayUProductList(List<ShoppingCartPositionDTO> shoppingCartPositionDtos) {
     ArrayList<PayUProduct> products = new ArrayList<>();
     shoppingCartPositionDtos.forEach(p -> {
       ProductDTO product = p.getProduct();
@@ -244,7 +219,7 @@ public class PayUClientImpl implements PayUClient {
     return order;
   }
 
-  public boolean signatureNotificationIsVerified(String signatureHeader, PayUOrderNotifyRequest notify) {
+  private boolean signatureNotificationIsVerified(String signatureHeader, PayUOrderNotifyRequest notify) {
     Map<String, String> signatures = Arrays.stream(signatureHeader.split(";"))
             .map(value -> value.split("="))
             .collect(Collectors.toMap(split -> split[0], split -> split[1]));
@@ -255,12 +230,6 @@ public class PayUClientImpl implements PayUClient {
     String jsonNotification = gson.toJson(notify);
     String concatenated = jsonNotification + secondKey;
     String expectedSignature = encodeMd5(concatenated);
-
-    try {
-      boolean isTrue = givenPassword_whenHashing_thenVerifying(incomingSignature, concatenated);
-    } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();
-    }
 
     if (expectedSignature.equals(incomingSignature)) {
       log.info("Correct signature");
@@ -282,17 +251,5 @@ public class PayUClientImpl implements PayUClient {
     } catch (NoSuchAlgorithmException e) {
       return "";
     }
-  }
-
-  public boolean givenPassword_whenHashing_thenVerifying(String hash, String myString)
-          throws NoSuchAlgorithmException {
-
-    MessageDigest md = MessageDigest.getInstance("MD5");
-    md.update(myString.getBytes());
-    byte[] digest = md.digest();
-    String myHash = DatatypeConverter
-            .printHexBinary(digest).toUpperCase();
-
-    return (myHash.equals(hash));
   }
 }

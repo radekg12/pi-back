@@ -4,9 +4,12 @@ import com.example.userportal.repository.OrderStatusCategoryRepository;
 import com.example.userportal.service.OrderStatusCategoryService;
 import com.example.userportal.service.dto.OrderStatusCategoryAllDTO;
 import com.example.userportal.service.mapper.OrderStatusCategoryAllMapper;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -16,7 +19,7 @@ public class OrderStatusCategoryServiceImpl implements OrderStatusCategoryServic
   private final OrderStatusCategoryAllMapper mapper;
 
   @Override
-  public Iterable<OrderStatusCategoryAllDTO> getCategories() {
-    return mapper.toOrderStatusCategoryAllDtos(repository.findAll());
+  public List<OrderStatusCategoryAllDTO> getCategories() {
+    return mapper.toOrderStatusCategoryAllDtos(Lists.newArrayList(repository.findAll()));
   }
 }

@@ -25,10 +25,6 @@ public interface CustomerMapper {
 
   List<Customer> toCustomers(List<CustomerDTO> customerDTOS);
 
-  Iterable<CustomerDTO> toCustomerDtos(Iterable<Customer> customers);
-
-  Iterable<Customer> toCustomers(Iterable<CustomerDTO> customerDTOS);
-
   @Mapping(target = "passwordHash", source = "password")
   @Mapping(target = "shoppingCartPositionsById", ignore = true)
   @Mapping(target = "ordersById", ignore = true)

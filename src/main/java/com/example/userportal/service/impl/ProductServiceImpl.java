@@ -2,13 +2,14 @@ package com.example.userportal.service.impl;
 
 import com.example.userportal.domain.Product;
 import com.example.userportal.domain.SpecificationPosition;
-import com.example.userportal.exception.InternalServerErrorException;
+import com.example.userportal.exception.ResourceNotFoundException;
 import com.example.userportal.repository.ProductRepository;
 import com.example.userportal.repository.SpecificationPositionRepository;
 import com.example.userportal.service.ProductService;
 import com.example.userportal.service.RecommendationService;
 import com.example.userportal.service.dto.ProductDTO;
 import com.example.userportal.service.mapper.ProductMapper;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -55,13 +55,13 @@ public class ProductServiceImpl implements ProductService {
     Optional<Product> product = repository.findById(id);
     product.ifPresent(repository::delete);
     return mapper.toProductDto(product
-            .orElseThrow(() -> new InternalServerErrorException("Order id=" + id + " could not be found")));
+            .orElseThrow(() -> new ResourceNotFoundException("Order id=" + id + " could not be found")));
   }
 
   @Override
-  public Iterable<ProductDTO> findAll() {
+  public List<ProductDTO> findAll() {
     Iterable<Product> products = repository.findAll();
-    return mapper.toProductDtos(products);
+    return mapper.toProductDtos(Lists.newArrayList(products));
   }
 
   @Override
@@ -89,20 +89,20 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Iterable<ProductDTO> findAllProductsBySubcategory(int subcategoryId) {
+  public List<ProductDTO> findAllProductsBySubcategory(int subcategoryId) {
     Iterable<Product> products = repository.findAllByProductSubcategoryId(subcategoryId);
-    return mapper.toProductDtos(products);
+    return mapper.toProductDtos(Lists.newArrayList(products));
   }
 
   @Override
-  public Iterable<ProductDTO> findAllProductsByCategory(int categoryId) {
+  public List<ProductDTO> findAllProductsByCategory(int categoryId) {
     Iterable<Product> products = repository.findAllByProductCategoryId(categoryId);
-    return mapper.toProductDtos(products);
+    return mapper.toProductDtos(Lists.newArrayList(products));
   }
 
   @Override
   public ProductDTO findById(int id) {
-    Product product = repository.findById(id).orElseThrow(() -> new InternalServerErrorException("Product id=" + id + " could not be found"));
+    Product product = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product id=" + id + " could not be found"));
     return mapper.toProductDto(product);
   }
 
@@ -140,7 +140,7 @@ public class ProductServiceImpl implements ProductService {
       p.setPhysicalQuantityInStock(currentPhysicalQuantity + quantity);
       repository.save(p);
     });
-    return mapper.toProductDto(product.orElseThrow(() -> new InternalServerErrorException("Product id=" + productId + " could not be found")));
+    return mapper.toProductDto(product.orElseThrow(() -> new ResourceNotFoundException("Product id=" + productId + " could not be found")));
   }
 
   @Override

@@ -7,6 +7,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = {ProductSubcategoryMapper.class, SpecificationPositionMapper.class})
 public interface ProductMapper {
 
@@ -20,9 +22,9 @@ public interface ProductMapper {
   @Mapping(target = "shoppingCartPositions", ignore = true)
   Product toProduct(ProductDTO productDto);
 
-  Iterable<ProductDTO> toProductDtos(Iterable<Product> product);
+  List<ProductDTO> toProductDtos(List<Product> product);
 
-  Iterable<Product> toProducts(Iterable<ProductDTO> productDto);
+  List<Product> toProducts(List<ProductDTO> productDto);
 
   default Page<ProductDTO> toPageOfProductDtos(Page<Product> productPage) {
     return productPage.map(this::toProductDto);

@@ -22,9 +22,4 @@ public interface OrderStatusSmallMapper {
   List<OrderStatusSmallDTO> toOrderStatusSmallDtos(List<OrderStatus> orderStatusesSmall);
 
   List<OrderStatus> toOrderStatuses(List<OrderStatusSmallDTO> orderStatusDTOS);
-
-  Iterable<OrderStatusSmallDTO> toOrderStatusDtos(Iterable<OrderStatus> orderStatusesSmall);
-
-  Iterable<OrderStatus> toOrderStatuses(Iterable<OrderStatusSmallDTO> orderStatusDTOS);
-
 }

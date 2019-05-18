@@ -3,6 +3,7 @@ package com.example.userportal.service;
 import com.example.userportal.domain.Customer;
 import com.example.userportal.service.dto.CustomerDTO;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CustomerService {
@@ -11,7 +12,9 @@ public interface CustomerService {
 
   CustomerDTO getCustomerDTO(int id);
 
-  Iterable<CustomerDTO> getCustomerDTOs();
+  CustomerDTO getCurrentCustomerDTO();
+
+  List<CustomerDTO> getCustomerDTOs();
 
   CustomerDTO getCustomerByOrder(int orderId);
 

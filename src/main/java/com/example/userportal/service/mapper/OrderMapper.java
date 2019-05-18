@@ -31,8 +31,4 @@ public interface OrderMapper {
   List<OrderDTO> toOrderDtos(List<Order> orders);
 
   List<Order> toOrders(List<OrderDTO> orderDTOS);
-
-  Iterable<OrderDTO> toOrderDtos(Iterable<Order> orders);
-
-  Iterable<Order> toOrders(Iterable<OrderDTO> orderDTOS);
 }

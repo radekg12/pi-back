@@ -50,7 +50,10 @@ public class AuthServiceImpl implements AuthService {
       throw new EmailNotFoundException();
     }
 
-    Set<Authority> authorities = customerService.findOneByEmail(signInRequest.getUsername()).map(Customer::getAuthorities).orElseThrow(InvalidPasswordException::new);
+    Set<Authority> authorities = customerService
+            .findOneByEmail(signInRequest.getUsername())
+            .map(Customer::getAuthorities)
+            .orElseThrow(InvalidPasswordException::new);
 
     Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
@@ -59,9 +62,7 @@ public class AuthServiceImpl implements AuthService {
             )
     );
     SecurityContextHolder.getContext().setAuthentication(authentication);
-
     String jwt = tokenProvider.createToken(authentication, signInRequest.getRememberMe());
-
     return new JwtAuthenticationResponse(jwt, signInRequest.getRememberMe(), authorities);
   }
 

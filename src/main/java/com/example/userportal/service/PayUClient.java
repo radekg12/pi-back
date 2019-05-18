@@ -11,11 +11,11 @@ import java.io.IOException;
 
 public interface PayUClient {
 
-  PayUOrderCreateResponse payForOrder(int customerId, HttpServletRequest req, PayUOrderDTO payUOrderDTO);
+  PayUOrderCreateResponse payForOrder(HttpServletRequest req, PayUOrderDTO payUOrderDTO);
 
-  PayUResponse createPayment(int customerId) throws IOException;
+  PayUResponse createPayment(int customerId);
 
-  PayUOrderCreateResponse completePayment(int customerId, HttpServletRequest req, PayUResponse payUResponse, PayUOrderDTO payUOrderDTO) throws IOException;
+  PayUOrderCreateResponse completePayment(HttpServletRequest req, PayUResponse payUResponse, PayUOrderDTO payUOrderDTO);
 
   OrderDTO finalizePayment(String signatureHeader, PayUOrderNotifyRequest notify);
 }

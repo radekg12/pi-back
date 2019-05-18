@@ -19,6 +19,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.cors.CorsConfiguration;
@@ -43,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   final private SecurityProblemSupport problemSupport;
   final private CustomUserDetailsService customUserDetailsService;
   final private JwtAuthenticationEntryPoint unauthorizedHandler;
+  final private AccessDeniedHandler accessDeniedHandler;
 
   @Bean
   public JwtAuthenticationFilter jwtAuthenticationFilter() {
@@ -92,7 +94,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/**/*.css",
                     "/**/*.js")
             .permitAll()
-            .antMatchers("/auth/**", "/menu/**", "/products/**", "/payu/notify")
+            .antMatchers("/auth/**",
+                    "/menu/**",
+                    "/products/**",
+                    "/payu/notify",
+                    "/configuration/ui",
+                    "/webjars/**",
+                    "/swagger-ui.html",
+                    "/swagger-resources",
+                    "/swagger-resources/**",
+                    "/configuration/security",
+                    "/v2/api-docs")
             .permitAll()
             .anyRequest()
             .authenticated();

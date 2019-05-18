@@ -1,14 +1,12 @@
 package com.example.userportal.exception;
 
-import org.zalando.problem.AbstractThrowableProblem;
-import org.zalando.problem.Status;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-/**
- * Simple exception with a message, that returns an Internal Server Error code.
- */
-public class InternalServerErrorException extends AbstractThrowableProblem {
+@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+public class InternalServerErrorException extends RuntimeException {
 
   public InternalServerErrorException(String message) {
-    super(null, message, Status.INTERNAL_SERVER_ERROR);
+    super(message);
   }
 }

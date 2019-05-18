@@ -1,7 +1,6 @@
 package com.example.userportal.service;
 
 import com.example.userportal.configuration.RedisConfig;
-import com.example.userportal.domain.Product;
 import com.example.userportal.service.dto.ProductDTO;
 import com.example.userportal.service.impl.RecommendationServiceImpl;
 import org.junit.AfterClass;

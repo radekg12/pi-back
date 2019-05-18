@@ -6,6 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = ProductMapper.class)
 public interface ShoppingCartPositionMapper {
 
@@ -20,7 +22,7 @@ public interface ShoppingCartPositionMapper {
   @Mapping(target = "productByProductId", source = "product")
   ShoppingCartPosition toShoppingCartPosition(ShoppingCartPositionDTO shoppingCartPositionDto);
 
-  Iterable<ShoppingCartPositionDTO> toShoppingCartPositionDtos(Iterable<ShoppingCartPosition> shoppingCartPositions);
+  List<ShoppingCartPositionDTO> toShoppingCartPositionDtos(List<ShoppingCartPosition> shoppingCartPositions);
 
-  Iterable<ShoppingCartPosition> toShoppingCartPositions(Iterable<ShoppingCartPositionDTO> shoppingCartPositionDtos);
+  List<ShoppingCartPosition> toShoppingCartPositions(List<ShoppingCartPositionDTO> shoppingCartPositionDtos);
 }

@@ -5,6 +5,8 @@ import com.example.userportal.service.dto.ProductCategoryDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = ProductSubcategoryMapper.class)
 public interface ProductCategoryMapper {
 
@@ -14,7 +16,7 @@ public interface ProductCategoryMapper {
 
   ProductCategory toProductCategory(ProductCategoryDTO productCategoryDTO);
 
-  Iterable<ProductCategoryDTO> toProductCategoryDtos(Iterable<ProductCategory> productCategories);
+  List<ProductCategoryDTO> toProductCategoryDtos(List<ProductCategory> productCategories);
 
-  Iterable<ProductCategory> toProductCategories(Iterable<ProductCategoryDTO> productCategoryDTOs);
+  List<ProductCategory> toProductCategories(List<ProductCategoryDTO> productCategoryDTOs);
 }

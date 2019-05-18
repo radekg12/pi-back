@@ -22,9 +22,4 @@ public interface OrderStatusCategoryAllMapper {
   List<OrderStatusCategoryAllDTO> toOrderStatusCategoryAllDtos(List<OrderStatusCategory> orderStatusCategories);
 
   List<OrderStatusCategory> toOrderStatusCategories(List<OrderStatusCategoryAllDTO> orderStatusCategoryAllDTOS);
-
-  Iterable<OrderStatusCategoryAllDTO> toOrderStatusCategoryAllDtos(Iterable<OrderStatusCategory> orderStatusCategories);
-
-  Iterable<OrderStatusCategory> toOrderStatusCategories(Iterable<OrderStatusCategoryAllDTO> orderStatusCategoryAllDTOS);
-
 }
