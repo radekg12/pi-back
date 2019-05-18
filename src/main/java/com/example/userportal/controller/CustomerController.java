@@ -1,15 +1,14 @@
 package com.example.userportal.controller;
 
 
-import com.example.userportal.security.jwt.UserPrincipal;
 import com.example.userportal.service.CustomerService;
 import com.example.userportal.service.dto.CustomerDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping({"/customer"})
@@ -24,15 +23,13 @@ public class CustomerController {
 
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   @GetMapping
-  public CustomerDTO getCustomer(Authentication authentication) {
-    UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-    int customerId = principal.getId();
-    return customerService.getCustomerDTO(customerId);
+  public CustomerDTO getCustomer() {
+    return customerService.getCurrentCustomerDTO();
   }
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @GetMapping(path = "/all")
-  public Iterable<CustomerDTO> getCustomers() {
+  public List<CustomerDTO> getCustomers() {
     return customerService.getCustomerDTOs();
   }
 

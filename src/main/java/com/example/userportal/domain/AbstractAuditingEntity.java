@@ -12,14 +12,17 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
 import java.io.Serializable;
-import java.time.Instant;
+import java.util.Date;
+
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 @MappedSuperclass
 @Audited
 @Data
 @EntityListeners(AuditingEntityListener.class)
-public abstract class AbstractAuditingEntity implements Serializable {
+abstract class AbstractAuditingEntity implements Serializable {
 
   @CreatedBy
   @Column(name = "created_by", nullable = false, length = 50, updatable = false)
@@ -27,9 +30,10 @@ public abstract class AbstractAuditingEntity implements Serializable {
   private String createdBy;
 
   @CreatedDate
+  @Temporal(TIMESTAMP)
   @Column(name = "created_date", updatable = false)
   @JsonIgnore
-  private Instant createdDate = Instant.now();
+  private Date createdDate;
 
   @LastModifiedBy
   @Column(name = "last_modified_by", length = 50)
@@ -37,7 +41,8 @@ public abstract class AbstractAuditingEntity implements Serializable {
   private String lastModifiedBy;
 
   @LastModifiedDate
+  @Temporal(TIMESTAMP)
   @Column(name = "last_modified_date")
   @JsonIgnore
-  private Instant lastModifiedDate = Instant.now();
+  private Date lastModifiedDate;
 }

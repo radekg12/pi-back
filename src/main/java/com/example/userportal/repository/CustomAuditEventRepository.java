@@ -20,7 +20,7 @@ import java.util.Map;
 public class CustomAuditEventRepository implements AuditEventRepository {
 
 
-  protected static final int EVENT_DATA_COLUMN_MAX_LENGTH = 255;
+  private static final int EVENT_DATA_COLUMN_MAX_LENGTH = 255;
   private static final String AUTHORIZATION_FAILURE = "AUTHORIZATION_FAILURE";
   private final PersistenceAuditEventRepository persistenceAuditEventRepository;
 
@@ -37,7 +37,7 @@ public class CustomAuditEventRepository implements AuditEventRepository {
 
   @Override
   public List<AuditEvent> find(String principal, Instant after, String type) {
-    Iterable<PersistentAuditEvent> persistentAuditEvents =
+    List<PersistentAuditEvent> persistentAuditEvents =
             persistenceAuditEventRepository.findByPrincipalAndAuditEventDateAfterAndAuditEventType(principal, after, type);
     return auditEventConverter.convertToAuditEvent(persistentAuditEvents);
   }

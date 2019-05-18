@@ -2,7 +2,9 @@ package com.example.userportal.service;
 
 import com.example.userportal.domain.PaymentMethod;
 
+import java.util.List;
+
 public interface PaymentMethodService {
-  Iterable<PaymentMethod> findAll();
+  List<PaymentMethod> findAll();
 
 }

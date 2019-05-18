@@ -16,15 +16,15 @@ public interface ProductService {
 
   Page<ProductDTO> findSubcategoryPaginated(int subcategoryId, Pageable pageRequest);
 
-  Iterable<ProductDTO> findAllProductsBySubcategory(int subcategoryId);
+  List<ProductDTO> findAllProductsBySubcategory(int subcategoryId);
 
-  Iterable<ProductDTO> findAllProductsByCategory(int categoryId);
+  List<ProductDTO> findAllProductsByCategory(int categoryId);
 
   ProductDTO findById(int id);
 
   ProductDTO delete(int id);
 
-  Iterable<ProductDTO> findAll();
+  List<ProductDTO> findAll();
 
   Long getCollectionSize();
 

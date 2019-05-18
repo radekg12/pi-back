@@ -4,10 +4,14 @@ import com.example.userportal.domain.Order;
 import com.example.userportal.service.dto.OrderDTO;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface OrderService {
-  Iterable<OrderDTO> findAll();
+import java.util.List;
 
-  Iterable<OrderDTO> findAllByCustomerId(int customerId);
+public interface OrderService {
+  List<OrderDTO> findAll();
+
+  List<OrderDTO> findAllByCustomerId(int customerId);
+
+  List<OrderDTO> findAllCurrentCustomerOrders();
 
   Order saveOrder(Order order);
 

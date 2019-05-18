@@ -1,15 +1,14 @@
 package com.example.userportal.controller;
 
 import com.example.userportal.requestmodel.UpdateShoppingCartModel;
-import com.example.userportal.security.jwt.UserPrincipal;
 import com.example.userportal.service.ShoppingCartService;
 import com.example.userportal.service.dto.ShoppingCartPositionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping({"/shoppingCart"})
@@ -22,36 +21,28 @@ public class ShoppingCartController {
     this.shoppingCartService = shoppingCartService;
   }
 
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('ROLE_USER')")
   @PostMapping
-  public ShoppingCartPositionDTO add(@Valid @RequestBody int productId, Authentication authentication) {
-    UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-    int customerId = principal.getId();
-    return shoppingCartService.addPosition(customerId, productId);
+  public ShoppingCartPositionDTO add(@Valid @RequestBody int productId) {
+    return shoppingCartService.addPosition(productId);
   }
 
   @PreAuthorize("hasRole('ROLE_USER')")
   @DeleteMapping(path = "/{id}")
-  public ShoppingCartPositionDTO delete(@PathVariable("id") int productId, Authentication authentication) {
-    UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-    int customerId = principal.getId();
-    return shoppingCartService.deletePosition(customerId, productId);
+  public ShoppingCartPositionDTO delete(@PathVariable("id") int productId) {
+    return shoppingCartService.deletePosition(productId);
   }
 
   @PreAuthorize("hasRole('ROLE_USER')")
   @PutMapping
-  public ShoppingCartPositionDTO update(@Valid @RequestBody UpdateShoppingCartModel body, Authentication authentication) {
-    UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-    int customerId = principal.getId();
-    return shoppingCartService.updatePositionQuantity(customerId, body.getProductId(), body.getQuantity());
+  public ShoppingCartPositionDTO update(@Valid @RequestBody UpdateShoppingCartModel body) {
+    return shoppingCartService.updatePositionQuantity(body.getProductId(), body.getQuantity());
   }
 
   @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping
-  public Iterable<ShoppingCartPositionDTO> findAll(Authentication authentication) {
-    UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-    int customerId = principal.getId();
-    return shoppingCartService.getAllPositions(customerId);
+  public List<ShoppingCartPositionDTO> findAll() {
+    return shoppingCartService.getAllCurrentCustomerPositions();
   }
 
 }

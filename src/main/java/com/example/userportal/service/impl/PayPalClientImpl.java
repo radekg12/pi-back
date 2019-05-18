@@ -16,8 +16,8 @@ import java.util.Map;
 
 @Service
 public class PayPalClientImpl implements PayPalClient {
-  private static final String PAYPAL_SUCCESS_URL = "http://localhost:4200/add";
-  private static final String PAYPAL_CANCEL_URL = "http://localhost:4200/";
+  private static final String PAYPAL_SUCCESS_URL = "https://radekg12.github.io/pi-front/account/orders";
+  private static final String PAYPAL_CANCEL_URL = "https://radekg12.github.io/pi-front/account/orders?error=501";
   @Value("${paypal.clientId}")
   private String clientId;
   @Value("${paypal.clientSecret}")
@@ -27,26 +27,27 @@ public class PayPalClientImpl implements PayPalClient {
 
   public Map<String, Object> createPayment(String sum) {
     Map<String, Object> response = new HashMap<>();
-    Amount amount = new Amount();
-    amount.setCurrency("PLN");
-    amount.setTotal(sum);
+    Amount amount = new Amount()
+            .setTotal("PLN")
+            .setTotal(sum);
+
     Transaction transaction = new Transaction();
     transaction.setAmount(amount);
     List<Transaction> transactions = new ArrayList<>();
     transactions.add(transaction);
 
-    Payer payer = new Payer();
-    payer.setPaymentMethod("paypal");
+    RedirectUrls redirectUrls = new RedirectUrls()
+            .setCancelUrl(PAYPAL_CANCEL_URL)
+            .setReturnUrl(PAYPAL_SUCCESS_URL);
 
-    Payment payment = new Payment();
-    payment.setIntent("sale");
-    payment.setPayer(payer);
-    payment.setTransactions(transactions);
+    Payer payer = new Payer().setPaymentMethod("paypal");
 
-    RedirectUrls redirectUrls = new RedirectUrls();
-    redirectUrls.setCancelUrl(PAYPAL_CANCEL_URL);
-    redirectUrls.setReturnUrl(PAYPAL_SUCCESS_URL);
-    payment.setRedirectUrls(redirectUrls);
+    Payment payment = new Payment()
+            .setIntent("sale")
+            .setPayer(payer)
+            .setTransactions(transactions)
+            .setRedirectUrls(redirectUrls);
+
     Payment createdPayment;
     try {
       String redirectUrl = "";
@@ -73,11 +74,9 @@ public class PayPalClientImpl implements PayPalClient {
 
   public String completePayment(HttpServletRequest req) {
     Map<String, Object> response = new HashMap<>();
-    Payment payment = new Payment();
-    payment.setId(req.getParameter("paymentID"));
+    Payment payment = new Payment().setId(req.getParameter("paymentID"));
+    PaymentExecution paymentExecution = new PaymentExecution().setPayerId(req.getParameter("payerID"));
 
-    PaymentExecution paymentExecution = new PaymentExecution();
-    paymentExecution.setPayerId(req.getParameter("payerID"));
     try {
       APIContext context = new APIContext(clientId, clientSecret, "sandbox");
       Payment createdPayment = payment.execute(context, paymentExecution);
@@ -86,12 +85,10 @@ public class PayPalClientImpl implements PayPalClient {
         response.put("payment", createdPayment);
       }
     } catch (PayPalRESTException e) {
-      System.err.println(e.getDetails());
+      System.out.println(e.getDetails());
     }
 
-
     Gson gson = new Gson();
-    String xx = gson.toJson(response);
-    return xx;
+    return gson.toJson(response);
   }
 }

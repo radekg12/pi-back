@@ -1,8 +1,12 @@
 package com.example.userportal.exception;
 
-public class EmailAlreadyUsedException extends BadRequestAlertException {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+public class EmailAlreadyUsedException extends RuntimeException {
 
   public EmailAlreadyUsedException() {
-    super(null, "Email is already in use!", "userManagement", "emailexists");
+    super("Email is already in use!");
   }
 }

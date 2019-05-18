@@ -1,7 +1,7 @@
 package com.example.userportal.service;
 
-public interface EmailService {
-  void sendSimpleMessage(String to, String subject, String content);
+import com.example.userportal.service.dto.SupportDTO;
 
-  void sendEmail(String from, String to, String title, String content);
+public interface EmailService {
+  void sendSupportEmail(SupportDTO supportDTO);
 }

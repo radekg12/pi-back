@@ -3,13 +3,15 @@ package com.example.userportal.service.impl;
 import com.example.userportal.domain.Order;
 import com.example.userportal.domain.OrderPosition;
 import com.example.userportal.domain.OrderStatus;
-import com.example.userportal.exception.InternalServerErrorException;
+import com.example.userportal.exception.ResourceNotFoundException;
 import com.example.userportal.repository.*;
+import com.example.userportal.security.SecurityUtils;
 import com.example.userportal.service.OrderService;
 import com.example.userportal.service.dto.OrderDTO;
 import com.example.userportal.service.dto.ProductDTO;
 import com.example.userportal.service.mapper.OrderMapper;
 import com.example.userportal.service.mapper.ProductMapper;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,15 +35,20 @@ public class OrderServiceImpl implements OrderService {
   private final ProductMapper productMapper;
 
   @Override
-  public Iterable<OrderDTO> findAll() {
+  public List<OrderDTO> findAll() {
     Iterable<Order> orders = repository.findAll();
-    return mapper.toOrderDtos(orders);
+    return mapper.toOrderDtos(Lists.newArrayList(orders));
   }
 
   @Override
-  public Iterable<OrderDTO> findAllByCustomerId(int customerId) {
+  public List<OrderDTO> findAllByCustomerId(int customerId) {
     Iterable<Order> orders = repository.findAllByCustomerId(customerId);
-    return mapper.toOrderDtos(orders);
+    return mapper.toOrderDtos(Lists.newArrayList(orders));
+  }
+
+  @Override
+  public List<OrderDTO> findAllCurrentCustomerOrders() {
+    return findAllByCustomerId(SecurityUtils.getCurrentUserId());
   }
 
   @Override
@@ -70,7 +77,7 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public OrderDTO findById(int id) {
     Order order = repository.findById(id)
-            .orElseThrow(() -> new InternalServerErrorException("Order id=" + id + " could not be found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Order id=" + id + " could not be found"));
     return mapper.toOrderDto(order);
   }
 
@@ -78,10 +85,10 @@ public class OrderServiceImpl implements OrderService {
   public OrderDTO updateStatus(int orderId, int statusId) {
     Order order = repository
             .findById(orderId)
-            .orElseThrow(() -> new InternalServerErrorException("Order id=" + orderId + " could not be found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Order id=" + orderId + " could not be found"));
     OrderStatus status = orderStatusRepository
             .findById(statusId)
-            .orElseThrow(() -> new InternalServerErrorException("Status id=" + statusId + " could not be found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Status id=" + statusId + " could not be found"));
     order.setOrderStatusByOrderStatusId(status);
     return mapper.toOrderDto(repository.save(order));
   }

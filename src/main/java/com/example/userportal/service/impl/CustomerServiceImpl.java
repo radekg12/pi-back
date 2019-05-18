@@ -1,16 +1,19 @@
 package com.example.userportal.service.impl;
 
 import com.example.userportal.domain.Customer;
-import com.example.userportal.exception.InternalServerErrorException;
+import com.example.userportal.exception.ResourceNotFoundException;
 import com.example.userportal.repository.CustomerRepository;
+import com.example.userportal.security.SecurityUtils;
 import com.example.userportal.service.CustomerService;
 import com.example.userportal.service.dto.AddressDTO;
 import com.example.userportal.service.dto.CustomerDTO;
 import com.example.userportal.service.mapper.CustomerMapper;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,20 +26,25 @@ public class CustomerServiceImpl implements CustomerService {
   @Override
   public Customer getCustomer(int id) {
     return repository.findById(id)
-            .orElseThrow(() -> new InternalServerErrorException("Customer id=" + id + " could not be found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Customer id=" + id + " could not be found"));
   }
 
   @Override
   public CustomerDTO getCustomerDTO(int id) {
     Customer customer = repository.findById(id)
-            .orElseThrow(() -> new InternalServerErrorException("Customer id=" + id + " could not be found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Customer id=" + id + " could not be found"));
     return mapper.toCustomerDto(customer);
   }
 
   @Override
-  public Iterable<CustomerDTO> getCustomerDTOs() {
+  public CustomerDTO getCurrentCustomerDTO() {
+    return getCustomerDTO(SecurityUtils.getCurrentUserId());
+  }
+
+  @Override
+  public List<CustomerDTO> getCustomerDTOs() {
     Iterable<Customer> customers = repository.findAll();
-    return mapper.toCustomerDtos(customers);
+    return mapper.toCustomerDtos(Lists.newArrayList(customers));
   }
 
   @Override

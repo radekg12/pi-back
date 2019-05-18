@@ -26,7 +26,7 @@ public class ProductController {
   }
 
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_WORKER')")
   @PostMapping
   public ProductDTO create(@Valid @RequestBody ProductDTO productDto) {
     return productService.create(productDto);
@@ -39,7 +39,7 @@ public class ProductController {
   }
 
   @GetMapping(path = "all")
-  public Iterable<ProductDTO> findAll() {
+  public List<ProductDTO> findAll() {
     return productService.findAll();
   }
 
@@ -58,28 +58,28 @@ public class ProductController {
     return productService.findSubcategoryPaginated(subcategoryId, pageRequest);
   }
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_WORKER')")
   @PostMapping({"/warehouse/take/{id}"})
   public ProductDTO takeProductFromWarehouse(@PathVariable("id") int id,
                                              @RequestParam(value = "quantity") int quantity) {
     return productService.updatePhysicalQuantity(id, quantity);
   }
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_WORKER')")
   @PostMapping({"/warehouse/put/{id}"})
   public ProductDTO putProductToWarehouse(@PathVariable("id") int id,
                                           @RequestParam(value = "quantity") int quantity) {
     return productService.updatePhysicalQuantity(id, quantity * (-1));
   }
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_WORKER')")
   @PutMapping
   public ProductDTO update(
           @Valid @RequestBody ProductDTO productDto) {
     return productService.update(productDto);
   }
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_WORKER')")
   @DeleteMapping(path = "/{id}")
   public ProductDTO delete(
           @PathVariable("id") int id) {

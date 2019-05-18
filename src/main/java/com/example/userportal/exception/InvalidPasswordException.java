@@ -1,11 +1,12 @@
 package com.example.userportal.exception;
 
-import org.zalando.problem.AbstractThrowableProblem;
-import org.zalando.problem.Status;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-public class InvalidPasswordException extends AbstractThrowableProblem {
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+public class InvalidPasswordException extends RuntimeException {
 
   public InvalidPasswordException() {
-    super(null, "Incorrect password", Status.BAD_REQUEST);
+    super("Incorrect password");
   }
 }

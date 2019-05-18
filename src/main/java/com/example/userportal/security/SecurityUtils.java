@@ -1,6 +1,8 @@
 package com.example.userportal.security;
 
+import com.example.userportal.exception.UnauthorizedCurrentUserException;
 import com.example.userportal.security.jwt.AuthoritiesConstants;
+import com.example.userportal.security.jwt.UserPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +26,18 @@ public final class SecurityUtils {
               }
               return null;
             });
+  }
+
+  public static Integer getCurrentUserId() {
+    SecurityContext securityContext = SecurityContextHolder.getContext();
+    return Optional.ofNullable(securityContext.getAuthentication())
+            .map(authentication -> {
+              if (authentication.getPrincipal() instanceof UserPrincipal) {
+                UserPrincipal springSecurityUser = (UserPrincipal) authentication.getPrincipal();
+                return springSecurityUser.getId();
+              } else return null;
+            })
+            .orElseThrow(UnauthorizedCurrentUserException::new);
   }
 
 
