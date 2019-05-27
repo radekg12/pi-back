@@ -4,10 +4,7 @@ import com.example.userportal.domain.*;
 import com.example.userportal.requestmodel.payu.*;
 import com.example.userportal.security.SecurityUtils;
 import com.example.userportal.service.*;
-import com.example.userportal.service.dto.OrderDTO;
-import com.example.userportal.service.dto.PayUOrderDTO;
-import com.example.userportal.service.dto.ProductDTO;
-import com.example.userportal.service.dto.ShoppingCartPositionDTO;
+import com.example.userportal.service.dto.*;
 import com.example.userportal.service.mapper.AddressMapper;
 import com.example.userportal.service.mapper.DeliveryTypeMapper;
 import com.example.userportal.service.mapper.PaymentMethodMapper;
@@ -43,6 +40,8 @@ public class PayUClientImpl implements PayUClient {
   private final CustomerService customerService;
   private final OrderStatusService orderStatusService;
   private final AddressService addressService;
+  private final PaymentMethodService paymentMethodService;
+  private final DeliveryTypeService deliveryTypeService;
 
   private final ProductMapper productMapper;
   private final AddressMapper addressMapper;
@@ -70,13 +69,30 @@ public class PayUClientImpl implements PayUClient {
   @Override
   public PayUOrderCreateResponse payForOrder(HttpServletRequest req, PayUOrderDTO payUOrderDTO) {
     Integer customerId = SecurityUtils.getCurrentUserId();
-    PayUResponse payUResponse;
-    payUResponse = createPayment(customerId);
-    return completePayment(req, payUResponse, payUOrderDTO);
+    PayUAuthenticationResponse payUAuthenticationResponse;
+    payUAuthenticationResponse = createPayment(customerId);
+    return completePayment(req, payUAuthenticationResponse, payUOrderDTO, null);
   }
 
   @Override
-  public PayUResponse createPayment(int customerId) {
+  public PayUOrderCreateResponse payForOrderWithGooglePay(HttpServletRequest req, GooglePayOrderDTO googlePayOrderDTO) {
+    Integer customerId = SecurityUtils.getCurrentUserId();
+    PayUAuthenticationResponse payUAuthenticationResponse;
+    payUAuthenticationResponse = createPayment(customerId);
+
+    PaymentMethodDTO paymentMethod = paymentMethodService.findById(4);
+    DeliveryTypeDTO deliveryType = deliveryTypeService.findById(3);
+
+    PayUOrderDTO payUOrder = new PayUOrderDTO()
+            .setAddress(googlePayOrderDTO.getAddress())
+            .setDeliveryType(deliveryType)
+            .setPaymentMethod(paymentMethod);
+
+    return completePayment(req, payUAuthenticationResponse, payUOrder, googlePayOrderDTO.getGooglePaymentTokenBase64());
+  }
+
+  @Override
+  public PayUAuthenticationResponse createPayment(int customerId) {
     Map<String, String> parameters = new HashMap<>();
     parameters.put("grant_type", "client_credentials");
     parameters.put("client_id", clientId);
@@ -85,7 +101,7 @@ public class PayUClientImpl implements PayUClient {
     return new RestTemplate().postForObject(
             buildUrlWithParams(authorizeUrl, parameters),
             "",
-            PayUResponse.class);
+            PayUAuthenticationResponse.class);
   }
 
   private String buildParams(Map<String, String> params) {
@@ -100,7 +116,7 @@ public class PayUClientImpl implements PayUClient {
 
   @Override
   @Transactional
-  public PayUOrderCreateResponse completePayment(HttpServletRequest req, PayUResponse payUResponse, PayUOrderDTO payUOrderDTO) {
+  public PayUOrderCreateResponse completePayment(HttpServletRequest req, PayUAuthenticationResponse payUAuthenticationResponse, PayUOrderDTO payUOrderDTO, String googlePaymentToken) {
 
     Integer customerId = SecurityUtils.getCurrentUserId();
     List<ShoppingCartPositionDTO> shoppingCartPositionDtos = shoppingCartService.getAllCurrentCustomerPositions();
@@ -110,6 +126,7 @@ public class PayUClientImpl implements PayUClient {
     String ipAddress = req.getRemoteAddr();
     OrderStatus orderStatus = orderStatusService.getStatusById(1);
     Customer customer = customerService.getCustomer(customerId);
+
     Address address = addressService.save(addressMapper.toAddress(payUOrderDTO.getAddress()));
     Order order = saveOrder(shoppingCartPositionDtos, payUOrderDTO, customer, address, orderStatus, totalAmount);
 
@@ -135,8 +152,18 @@ public class PayUClientImpl implements PayUClient {
                     .build())
             .build();
 
+    if (googlePaymentToken != null) {
+      orderCreateRequest.setPayMethods(PayMethods.builder()
+              .payMethod(PayMethod.builder()
+                      .value("ap")
+                      .type("PBL")
+                      .authorizationCode(googlePaymentToken)
+                      .build())
+              .build());
+    }
+
     HttpHeaders headers = new HttpHeaders();
-    headers.set(HttpHeaders.AUTHORIZATION, payUResponse.getToken_type() + " " + payUResponse.getAccess_token());
+    headers.set(HttpHeaders.AUTHORIZATION, payUAuthenticationResponse.getToken_type() + " " + payUAuthenticationResponse.getAccess_token());
     HttpEntity<PayUOrderCreateRequest> request = new HttpEntity<>(orderCreateRequest, headers);
 
     return new RestTemplate().postForObject(

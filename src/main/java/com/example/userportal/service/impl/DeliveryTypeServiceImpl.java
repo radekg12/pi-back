@@ -1,6 +1,7 @@
 package com.example.userportal.service.impl;
 
 import com.example.userportal.domain.DeliveryType;
+import com.example.userportal.exception.ResourceNotFoundException;
 import com.example.userportal.repository.DeliveryTypeRepository;
 import com.example.userportal.service.DeliveryTypeService;
 import com.example.userportal.service.dto.DeliveryTypeDTO;
@@ -23,5 +24,11 @@ public class DeliveryTypeServiceImpl implements DeliveryTypeService {
   public List<DeliveryTypeDTO> findAll() {
     Iterable<DeliveryType> deliveryTypes = repository.findAll();
     return mapper.toDeliveryTypeDtos(Lists.newArrayList(deliveryTypes));
+  }
+
+  @Override
+  public DeliveryTypeDTO findById(int id) {
+    return mapper.toDeliveryTypeDto(repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Delivery type id=" + id + " could not be found")));
   }
 }
