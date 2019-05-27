@@ -3,6 +3,7 @@ package com.example.userportal.controller;
 import com.example.userportal.requestmodel.payu.PayUOrderCreateResponse;
 import com.example.userportal.requestmodel.payu.PayUOrderNotifyRequest;
 import com.example.userportal.service.PayUClient;
+import com.example.userportal.service.dto.GooglePayOrderDTO;
 import com.example.userportal.service.dto.OrderDTO;
 import com.example.userportal.service.dto.PayUOrderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,12 @@ public class PayUController {
   @PostMapping(value = "/make/payment")
   public PayUOrderCreateResponse makePayment(@Valid @RequestBody PayUOrderDTO payUOrderDTO, HttpServletRequest request) {
     return payUClient.payForOrder(request, payUOrderDTO);
+  }
+
+  @PreAuthorize("hasRole('ROLE_USER')")
+  @PostMapping(value = "/make/payment/googlepay")
+  public PayUOrderCreateResponse makePaymentWithGooglePay(@Valid @RequestBody GooglePayOrderDTO googlePayOrder, HttpServletRequest request) {
+    return payUClient.payForOrderWithGooglePay(request, googlePayOrder);
   }
 
   @PostMapping(value = "/notify")

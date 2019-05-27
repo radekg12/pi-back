@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class PayMethod {
-  String type;
   String value;
+  String type;
+  String authorizationCode;
 }
