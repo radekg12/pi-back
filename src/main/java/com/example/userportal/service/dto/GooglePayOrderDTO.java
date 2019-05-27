@@ -13,5 +13,5 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 public class GooglePayOrderDTO {
   private AddressDTO address;
-  private String googlePaymentToken;
+  private String googlePaymentTokenBase64;
 }

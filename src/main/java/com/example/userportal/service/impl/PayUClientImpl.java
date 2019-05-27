@@ -88,7 +88,7 @@ public class PayUClientImpl implements PayUClient {
             .setDeliveryType(deliveryType)
             .setPaymentMethod(paymentMethod);
 
-    return completePayment(req, payUAuthenticationResponse, payUOrder, googlePayOrderDTO.getGooglePaymentToken());
+    return completePayment(req, payUAuthenticationResponse, payUOrder, googlePayOrderDTO.getGooglePaymentTokenBase64());
   }
 
   @Override
@@ -153,17 +153,14 @@ public class PayUClientImpl implements PayUClient {
             .build();
 
     if (googlePaymentToken != null) {
-      String googlePaymentTokenBase64 = Base64.getEncoder().encodeToString(googlePaymentToken.getBytes());
       orderCreateRequest.setPayMethods(PayMethods.builder()
               .payMethod(PayMethod.builder()
                       .value("ap")
                       .type("PBL")
-                      .authorizationCode(googlePaymentTokenBase64)
+                      .authorizationCode(googlePaymentToken)
                       .build())
               .build());
     }
-
-    String json = new Gson().toJson(orderCreateRequest);
 
     HttpHeaders headers = new HttpHeaders();
     headers.set(HttpHeaders.AUTHORIZATION, payUAuthenticationResponse.getToken_type() + " " + payUAuthenticationResponse.getAccess_token());
