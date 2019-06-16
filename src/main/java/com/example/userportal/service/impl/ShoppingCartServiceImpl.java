@@ -41,7 +41,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
               return mapper.toShoppingCartPositionDto(repository.save(newPosition));
             });
-
   }
 
   @Override

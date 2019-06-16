@@ -5,14 +5,11 @@ import com.example.userportal.requestmodel.SignUpRequest;
 import com.example.userportal.service.dto.CustomerDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = AddressMapper.class)
 public interface CustomerMapper {
-
-  CustomerMapper MAPPER = Mappers.getMapper(CustomerMapper.class);
 
   @Mapping(target = "address", source = "addressByAddressId")
   CustomerDTO toCustomerDto(Customer customer);

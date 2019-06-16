@@ -4,14 +4,11 @@ import com.example.userportal.domain.OrderStatusCategory;
 import com.example.userportal.service.dto.OrderStatusCategoryDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface OrderStatusCategoryMapper {
-
-  OrderStatusCategoryMapper MAPPER = Mappers.getMapper(OrderStatusCategoryMapper.class);
 
   OrderStatusCategoryDTO toOrderStatusCategoryDto(OrderStatusCategory orderStatusCategory);
 
