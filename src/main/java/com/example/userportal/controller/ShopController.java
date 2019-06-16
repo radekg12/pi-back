@@ -4,8 +4,8 @@ import com.example.userportal.service.ShopService;
 import com.example.userportal.service.dto.ShopDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -22,8 +22,8 @@ public class ShopController {
     }
 
     @GetMapping("/{lat}-{lng}")
-    public List<ShopDTO> getClosestShops(@RequestParam("lat") double lat,
-                                         @RequestParam("lng") double lng) {
+    public List<ShopDTO> getClosestShops(@PathVariable("lat") Double lat,
+                                         @PathVariable("lng") Double lng) {
         return shopService.findClosestShops(lat, lng);
     }
 

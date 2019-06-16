@@ -24,7 +24,7 @@ public class ShopServiceImpl implements ShopService {
         List<Shop> shops = shopRepository.findAll();
         Comparator<Shop> distanceComparator = createDistanceComparator(latitude, longitude);
         shops.sort(distanceComparator);
-        return shopMapper.toShopDtos(shops.subList(0, 5));
+        return shopMapper.toShopDtos(getSublist(shops));
     }
 
     private Comparator<Shop> createDistanceComparator(double latitude, double longitude) {
@@ -33,6 +33,11 @@ public class ShopServiceImpl implements ShopService {
             double distanceToSecond = s2.calculateDistance(latitude, longitude);
             return Double.compare(distanceToFirst, distanceToSecond);
         };
+    }
+
+    private List<Shop> getSublist(List<Shop> shops) {
+        if (shops.size() < 5) return shops;
+        return shops.subList(0, 5);
     }
 
 }
