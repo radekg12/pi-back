@@ -6,7 +6,6 @@ import com.example.userportal.repository.DeliveryTypeRepository;
 import com.example.userportal.service.DeliveryTypeService;
 import com.example.userportal.service.dto.DeliveryTypeDTO;
 import com.example.userportal.service.mapper.DeliveryTypeMapper;
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,8 +21,8 @@ public class DeliveryTypeServiceImpl implements DeliveryTypeService {
 
   @Override
   public List<DeliveryTypeDTO> findAll() {
-    Iterable<DeliveryType> deliveryTypes = repository.findAll();
-    return mapper.toDeliveryTypeDtos(Lists.newArrayList(deliveryTypes));
+    List<DeliveryType> deliveryTypes = repository.findAll();
+    return mapper.toDeliveryTypeDtos(deliveryTypes);
   }
 
   @Override

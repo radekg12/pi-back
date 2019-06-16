@@ -1,10 +1,10 @@
 package com.example.userportal.service.impl;
 
+import com.example.userportal.domain.OrderStatusCategory;
 import com.example.userportal.repository.OrderStatusCategoryRepository;
 import com.example.userportal.service.OrderStatusCategoryService;
 import com.example.userportal.service.dto.OrderStatusCategoryAllDTO;
 import com.example.userportal.service.mapper.OrderStatusCategoryAllMapper;
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +20,7 @@ public class OrderStatusCategoryServiceImpl implements OrderStatusCategoryServic
 
   @Override
   public List<OrderStatusCategoryAllDTO> getCategories() {
-    return mapper.toOrderStatusCategoryAllDtos(Lists.newArrayList(repository.findAll()));
+    List<OrderStatusCategory> categories = repository.findAll();
+    return mapper.toOrderStatusCategoryAllDtos(categories);
   }
 }

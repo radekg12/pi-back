@@ -53,7 +53,7 @@ public class DeliveryTypeControllerTest {
     Mockito.when(repository.findAll()).thenReturn(deliveryTypes);
 
     //when
-    mvc.perform(get("/deliveryType")
+    mvc.perform(get("/delivery-types")
             .contentType(MediaType.APPLICATION_JSON))
 
             //then

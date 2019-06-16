@@ -18,15 +18,15 @@ import javax.validation.Valid;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-  final AuthService authService;
+    private final AuthService authService;
 
-  @PostMapping("/login")
-  public JwtAuthenticationResponse authenticateUser(@Valid @RequestBody SignInRequest signInRequest) {
-    return authService.authenticateUser(signInRequest);
-  }
+    @PostMapping("/login")
+    public JwtAuthenticationResponse authenticateUser(@Valid @RequestBody SignInRequest signInRequest) {
+        return authService.authenticateUser(signInRequest);
+    }
 
-  @PostMapping("/enrollment")
-  public CustomerDTO registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-    return authService.registerUser(signUpRequest);
-  }
+    @PostMapping("/register")
+    public CustomerDTO registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+        return authService.registerUser(signUpRequest);
+    }
 }

@@ -237,10 +237,10 @@ public class PayUClientImpl implements PayUClient {
     switch (notify.getOrder().getStatus()) {
       case PENDING:
       case CANCELED:
-        order = orderService.updateStatus(Integer.parseInt(notify.getOrder().getExtOrderId()), 5);
+        order = orderService.updateOrderStatus(Integer.parseInt(notify.getOrder().getExtOrderId()), 5);
         break;
       case COMPLETED:
-        order = orderService.updateStatus(Integer.parseInt(notify.getOrder().getExtOrderId()), 2);
+        order = orderService.updateOrderStatus(Integer.parseInt(notify.getOrder().getExtOrderId()), 2);
         break;
     }
     return order;

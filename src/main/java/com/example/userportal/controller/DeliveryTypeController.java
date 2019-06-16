@@ -11,18 +11,17 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping({"/deliveryType"})
+@RequestMapping("/delivery-types")
 public class DeliveryTypeController {
+    private final DeliveryTypeService deliveryService;
 
-  private final DeliveryTypeService deliveryService;
+    @Autowired
+    public DeliveryTypeController(DeliveryTypeService deliveryService) {
+        this.deliveryService = deliveryService;
+    }
 
-  @Autowired
-  public DeliveryTypeController(DeliveryTypeService deliveryService) {
-    this.deliveryService = deliveryService;
-  }
-
-  @GetMapping
-  public List<DeliveryTypeDTO> findAll() {
-    return deliveryService.findAll();
-  }
+    @GetMapping
+    public List<DeliveryTypeDTO> findAll() {
+        return deliveryService.findAll();
+    }
 }

@@ -11,7 +11,6 @@ import com.example.userportal.service.dto.OrderDTO;
 import com.example.userportal.service.dto.ProductDTO;
 import com.example.userportal.service.mapper.OrderMapper;
 import com.example.userportal.service.mapper.ProductMapper;
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,26 +23,26 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderServiceImpl implements OrderService {
 
-  private final OrderRepository repository;
+  private final OrderRepository orderRepository;
   private final OrderPositionRepository orderPositionRepository;
   private final ShoppingCartRepository shoppingCartRepository;
   private final ProductRepository productRepository;
   private final OrderStatusRepository orderStatusRepository;
-  private final OrderMapper mapper;
+  private final OrderMapper orderMapper;
 
   private final RecommendationServiceImpl recommendationService;
   private final ProductMapper productMapper;
 
   @Override
   public List<OrderDTO> findAll() {
-    Iterable<Order> orders = repository.findAll();
-    return mapper.toOrderDtos(Lists.newArrayList(orders));
+    List<Order> orders = orderRepository.findAll();
+    return orderMapper.toOrderDtos(orders);
   }
 
   @Override
   public List<OrderDTO> findAllByCustomerId(int customerId) {
-    Iterable<Order> orders = repository.findAllByCustomerId(customerId);
-    return mapper.toOrderDtos(Lists.newArrayList(orders));
+    List<Order> orders = orderRepository.findAllByCustomerId(customerId);
+    return orderMapper.toOrderDtos(orders);
   }
 
   @Override
@@ -53,43 +52,46 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   public Order saveOrder(Order order) {
-    return repository.save(order);
+    return orderRepository.save(order);
   }
 
   @Transactional
   @Override
   public void saveOrderAndCleanShoppingCart(Order order, int customerId) {
-    Order saveOrder = repository.save(order);
-    order.getOrderPositionsById().forEach(p ->
-            productRepository.sellProducts(p.getProductByProductId().getId(), p.getQuantity()));
+    Order saveOrder = orderRepository.save(order);
+    order.getOrderPositionsById().forEach(p -> productRepository.sellProducts(p.getProductByProductId().getId(), p.getQuantity()));
     order.getOrderPositionsById().forEach(p -> p.setOrderByOrderId(saveOrder));
     orderPositionRepository.saveAll(order.getOrderPositionsById());
     shoppingCartRepository.deleteAllByCustomerId(customerId);
-
-    List<ProductDTO> products = order.getOrderPositionsById()
-            .stream()
-            .map(OrderPosition::getProductByProductId)
-            .map(productMapper::toProductDto)
-            .collect(Collectors.toList());
+    List<ProductDTO> products = getProducts(order);
     recommendationService.addProductsRating(products);
   }
 
   @Override
   public OrderDTO findById(int id) {
-    Order order = repository.findById(id)
+    Order order = orderRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Order id=" + id + " could not be found"));
-    return mapper.toOrderDto(order);
+    return orderMapper.toOrderDto(order);
   }
 
+  @Transactional
   @Override
-  public OrderDTO updateStatus(int orderId, int statusId) {
-    Order order = repository
+  public OrderDTO updateOrderStatus(int orderId, int statusId) {
+    Order order = orderRepository
             .findById(orderId)
             .orElseThrow(() -> new ResourceNotFoundException("Order id=" + orderId + " could not be found"));
     OrderStatus status = orderStatusRepository
             .findById(statusId)
             .orElseThrow(() -> new ResourceNotFoundException("Status id=" + statusId + " could not be found"));
     order.setOrderStatusByOrderStatusId(status);
-    return mapper.toOrderDto(repository.save(order));
+    return orderMapper.toOrderDto(orderRepository.save(order));
+  }
+
+  private List<ProductDTO> getProducts(Order order) {
+    return order.getOrderPositionsById()
+            .stream()
+            .map(OrderPosition::getProductByProductId)
+            .map(productMapper::toProductDto)
+            .collect(Collectors.toList());
   }
 }

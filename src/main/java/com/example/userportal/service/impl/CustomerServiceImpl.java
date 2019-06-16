@@ -8,13 +8,12 @@ import com.example.userportal.service.CustomerService;
 import com.example.userportal.service.dto.AddressDTO;
 import com.example.userportal.service.dto.CustomerDTO;
 import com.example.userportal.service.mapper.CustomerMapper;
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -43,8 +42,8 @@ public class CustomerServiceImpl implements CustomerService {
 
   @Override
   public List<CustomerDTO> getCustomerDTOs() {
-    Iterable<Customer> customers = repository.findAll();
-    return mapper.toCustomerDtos(Lists.newArrayList(customers));
+    List<Customer> customers = repository.findAll();
+    return mapper.toCustomerDtos(customers);
   }
 
   @Override
@@ -53,44 +52,25 @@ public class CustomerServiceImpl implements CustomerService {
     return mapper.toCustomerDto(customer);
   }
 
+  @Transactional
   @Override
   public CustomerDTO updateCustomer(CustomerDTO customerDTO) {
-    return Optional.of(repository
-            .findOneByEmailIgnoreCase(customerDTO.getEmail()))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .map(customer -> {
-              customer
-                      .setFirstName(customerDTO.getFirstName())
-                      .setLastName(customerDTO.getLastName())
-                      .setEmail(customerDTO.getEmail())
-                      .setPhoneNumber(customerDTO.getPhoneNumber());
-
-              AddressDTO addressDTO = customerDTO.getAddress();
-              customer.getAddressByAddressId()
-                      .setStreet(addressDTO.getStreet())
-                      .setPostcode(addressDTO.getPostcode())
-                      .setCity(addressDTO.getCity());
-
-              return repository.save(customer);
-            })
-            .map(mapper::toCustomerDto)
-            .orElse(customerDTO);
+    Customer customer = findByEmail(customerDTO.getEmail());
+    customer.setFirstName(customerDTO.getFirstName())
+            .setLastName(customerDTO.getLastName())
+            .setEmail(customerDTO.getEmail())
+            .setPhoneNumber(customerDTO.getPhoneNumber());
+    AddressDTO addressDTO = customerDTO.getAddress();
+    customer.getAddressByAddressId()
+            .setStreet(addressDTO.getStreet())
+            .setPostcode(addressDTO.getPostcode())
+            .setCity(addressDTO.getCity());
+    return mapper.toCustomerDto(customer);
   }
 
-  @Override
-  public Customer updateCustomer(Customer customer) {
-    return repository.save(customer);
-  }
-
-  @Override
-  public Optional<Customer> findOneByEmail(String email) {
-    return repository.findOneByEmailIgnoreCase(email);
-  }
-
-  @Override
-  public boolean existsByEmail(String email) {
-    return repository.existsByEmail(email);
+  private Customer findByEmail(String email) {
+    return repository.findOneByEmailIgnoreCase(email)
+            .orElseThrow(() -> new ResourceNotFoundException("Customer with mail " + email + " does not exist"));
   }
 
 }
