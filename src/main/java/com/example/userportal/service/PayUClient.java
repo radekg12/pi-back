@@ -8,18 +8,16 @@ import com.example.userportal.service.dto.OrderDTO;
 import com.example.userportal.service.dto.PayUOrderDTO;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
-
 public interface PayUClient {
 
-  PayUOrderCreateResponse payForOrder(HttpServletRequest req, PayUOrderDTO payUOrderDTO);
+  PayUOrderCreateResponse payForOrder(PayUOrderDTO payUOrderDTO);
 
-  PayUOrderCreateResponse payForOrderWithGooglePay(HttpServletRequest req, GooglePayOrderDTO googlePayOrderDTO);
+  PayUOrderCreateResponse payForOrderWithGooglePay(GooglePayOrderDTO googlePayOrderDTO);
 
   PayUAuthenticationResponse createPayment(int customerId);
 
   @Transactional
-  PayUOrderCreateResponse completePayment(HttpServletRequest req, PayUAuthenticationResponse payUAuthenticationResponse, PayUOrderDTO payUOrderDTO, String googlePaymentToken);
+  PayUOrderCreateResponse completePayment(String authenticationValue, PayUOrderDTO payUOrderDTO, String googlePaymentToken);
 
   OrderDTO finalizePayment(String signatureHeader, PayUOrderNotifyRequest notify);
 }

@@ -1,6 +1,6 @@
 package com.example.userportal.controller;
 
-import com.example.userportal.requestmodel.UpdateShoppingCartModel;
+import com.example.userportal.requestmodel.UpdateShoppingCartRequest;
 import com.example.userportal.service.ShoppingCartService;
 import com.example.userportal.service.dto.ShoppingCartPositionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping({"/shoppingCart"})
+@RequestMapping({"/shopping-carts"})
 public class ShoppingCartController {
 
   private final ShoppingCartService shoppingCartService;
@@ -23,26 +23,25 @@ public class ShoppingCartController {
 
   @PreAuthorize("hasRole('ROLE_USER')")
   @PostMapping
-  public ShoppingCartPositionDTO add(@Valid @RequestBody int productId) {
+  public ShoppingCartPositionDTO addPosition(@Valid @RequestBody int productId) {
     return shoppingCartService.addPosition(productId);
   }
 
   @PreAuthorize("hasRole('ROLE_USER')")
-  @DeleteMapping(path = "/{id}")
-  public ShoppingCartPositionDTO delete(@PathVariable("id") int productId) {
+  @DeleteMapping(path = "/{productId}")
+  public ShoppingCartPositionDTO deletePosition(@PathVariable("productId") int productId) {
     return shoppingCartService.deletePosition(productId);
   }
 
   @PreAuthorize("hasRole('ROLE_USER')")
   @PutMapping
-  public ShoppingCartPositionDTO update(@Valid @RequestBody UpdateShoppingCartModel body) {
-    return shoppingCartService.updatePositionQuantity(body.getProductId(), body.getQuantity());
+  public ShoppingCartPositionDTO updatePosition(@Valid @RequestBody UpdateShoppingCartRequest request) {
+    return shoppingCartService.updatePositionQuantity(request.getProductId(), request.getQuantity());
   }
 
   @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping
-  public List<ShoppingCartPositionDTO> findAll() {
+  public List<ShoppingCartPositionDTO> findAllPositions() {
     return shoppingCartService.getAllCurrentCustomerPositions();
   }
-
 }

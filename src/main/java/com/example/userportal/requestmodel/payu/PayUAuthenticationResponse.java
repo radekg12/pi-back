@@ -9,4 +9,8 @@ public class PayUAuthenticationResponse {
   private String refresh_token;
   private String expires_in;
   private String grant_type;
+
+  public String getAuthenticationValue() {
+    return token_type + " " + access_token;
+  }
 }

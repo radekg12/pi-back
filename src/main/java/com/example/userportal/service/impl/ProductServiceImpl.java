@@ -5,6 +5,7 @@ import com.example.userportal.domain.SpecificationPosition;
 import com.example.userportal.exception.ResourceNotFoundException;
 import com.example.userportal.repository.ProductRepository;
 import com.example.userportal.repository.SpecificationPositionRepository;
+import com.example.userportal.requestmodel.UpdateWarehouseStateRequest;
 import com.example.userportal.service.ProductService;
 import com.example.userportal.service.RecommendationService;
 import com.example.userportal.service.dto.ProductDTO;
@@ -65,12 +66,6 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Long getCollectionSize() {
-    return repository.count();
-  }
-
-
-  @Override
   public Page<ProductDTO> findPaginated(Pageable pageRequest) {
     Page<Product> productPage = repository.findAll(pageRequest);
     return mapper.toPageOfProductDtos(productPage);
@@ -86,18 +81,6 @@ public class ProductServiceImpl implements ProductService {
   public Page<ProductDTO> findSubcategoryPaginated(int subcategoryId, Pageable pageRequest) {
     Page<Product> productPage = repository.findProductsByProductSubcategoryId(subcategoryId, pageRequest);
     return mapper.toPageOfProductDtos(productPage);
-  }
-
-  @Override
-  public List<ProductDTO> findAllProductsBySubcategory(int subcategoryId) {
-    Iterable<Product> products = repository.findAllByProductSubcategoryId(subcategoryId);
-    return mapper.toProductDtos(Lists.newArrayList(products));
-  }
-
-  @Override
-  public List<ProductDTO> findAllProductsByCategory(int categoryId) {
-    Iterable<Product> products = repository.findAllByProductCategoryId(categoryId);
-    return mapper.toProductDtos(Lists.newArrayList(products));
   }
 
   @Override
@@ -133,7 +116,16 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public ProductDTO updatePhysicalQuantity(int productId, int quantity) {
+  public ProductDTO takeProductFromWarehouse(UpdateWarehouseStateRequest request){
+    return updatePhysicalQuantity(request.getProductId(),request.getQuantity() * (-1));
+  }
+
+  @Override
+  public ProductDTO putProductIntoWarehouse(UpdateWarehouseStateRequest request){
+    return updatePhysicalQuantity(request.getProductId(),request.getQuantity() * (-1));
+  }
+
+  private ProductDTO updatePhysicalQuantity(int productId, int quantity) {
     Optional<Product> product = repository.findById(productId);
     product.ifPresent(p -> {
       Integer currentPhysicalQuantity = p.getPhysicalQuantityInStock();

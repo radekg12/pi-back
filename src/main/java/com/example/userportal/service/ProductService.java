@@ -1,5 +1,6 @@
 package com.example.userportal.service;
 
+import com.example.userportal.requestmodel.UpdateWarehouseStateRequest;
 import com.example.userportal.service.dto.ProductDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,21 +17,17 @@ public interface ProductService {
 
   Page<ProductDTO> findSubcategoryPaginated(int subcategoryId, Pageable pageRequest);
 
-  List<ProductDTO> findAllProductsBySubcategory(int subcategoryId);
-
-  List<ProductDTO> findAllProductsByCategory(int categoryId);
-
   ProductDTO findById(int id);
 
   ProductDTO delete(int id);
 
   List<ProductDTO> findAll();
 
-  Long getCollectionSize();
-
   ProductDTO update(ProductDTO productDto);
 
-  ProductDTO updatePhysicalQuantity(int productId, int quantity);
+  ProductDTO takeProductFromWarehouse(UpdateWarehouseStateRequest request);
+
+  ProductDTO putProductIntoWarehouse(UpdateWarehouseStateRequest request);
 
   List<ProductDTO> getProductRecommendation(int productId) throws RedisConnectionFailureException;
 }
