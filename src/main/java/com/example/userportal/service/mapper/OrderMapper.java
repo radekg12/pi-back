@@ -4,14 +4,11 @@ import com.example.userportal.domain.Order;
 import com.example.userportal.service.dto.OrderDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {OrderStatusMapper.class, DeliveryTypeMapper.class, PaymentMethodMapper.class, AddressMapper.class, OrderPositionMapper.class})
 public interface OrderMapper {
-
-  OrderMapper MAPPER = Mappers.getMapper(OrderMapper.class);
 
   @Mapping(target = "address", source = "addressByDeliveryAddressId")
   @Mapping(target = "orderStatus", source = "orderStatusByOrderStatusId")

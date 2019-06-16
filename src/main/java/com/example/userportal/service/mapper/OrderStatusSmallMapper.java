@@ -4,14 +4,11 @@ import com.example.userportal.domain.OrderStatus;
 import com.example.userportal.service.dto.OrderStatusSmallDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface OrderStatusSmallMapper {
-
-  OrderStatusSmallMapper MAPPER = Mappers.getMapper(OrderStatusSmallMapper.class);
 
   OrderStatusSmallDTO toOrderStatusDto(OrderStatus orderStatus);
 
