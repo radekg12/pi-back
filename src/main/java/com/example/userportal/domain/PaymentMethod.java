@@ -24,6 +24,6 @@ public class PaymentMethod implements Serializable {
   private Integer price;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "paymentMethodByPaymentMethodId")
-  private Collection<Order> ordersById;
+  @OneToMany(mappedBy = "paymentMethod")
+  private Collection<Order> orders;
 }

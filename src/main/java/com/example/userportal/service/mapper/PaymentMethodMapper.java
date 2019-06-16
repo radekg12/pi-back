@@ -12,7 +12,7 @@ public interface PaymentMethodMapper {
 
   PaymentMethodDTO toPaymentMethodDto(PaymentMethod paymentMethod);
 
-  @Mapping(target = "ordersById", ignore = true)
+  @Mapping(target = "orders", ignore = true)
   PaymentMethod toPaymentMethod(PaymentMethodDTO paymentMethodDTO);
 
   List<PaymentMethodDTO> toPaymentMethodDtos(List<PaymentMethod> paymentMethod);

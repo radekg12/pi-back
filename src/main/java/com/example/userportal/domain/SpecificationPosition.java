@@ -25,5 +25,5 @@ public class SpecificationPosition implements Serializable {
   @JsonIgnore
   @ManyToOne
   @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
-  private Product productByProductId;
+  private Product product;
 }

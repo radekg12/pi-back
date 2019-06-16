@@ -12,8 +12,8 @@ public interface OrderStatusSmallMapper {
 
   OrderStatusSmallDTO toOrderStatusDto(OrderStatus orderStatus);
 
-  @Mapping(target = "ordersById", ignore = true)
-  @Mapping(target = "orderStatusCategoryByOrderStatusCategoryId", ignore = true)
+  @Mapping(target = "orders", ignore = true)
+  @Mapping(target = "orderStatusCategory", ignore = true)
   OrderStatus toOrderStatus(OrderStatusSmallDTO orderStatusSmallDTO);
 
   List<OrderStatusSmallDTO> toOrderStatusSmallDtos(List<OrderStatus> orderStatusesSmall);

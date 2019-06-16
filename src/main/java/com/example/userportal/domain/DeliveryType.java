@@ -26,6 +26,6 @@ public class DeliveryType implements Serializable {
   private Integer price;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "deliveryTypeByDeliveryTypeId")
-  private Collection<Order> ordersById;
+  @OneToMany(mappedBy = "deliveryType")
+  private Collection<Order> orders;
 }

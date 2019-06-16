@@ -59,9 +59,9 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public void saveOrderAndCleanShoppingCart(Order order, int customerId) {
     Order saveOrder = orderRepository.save(order);
-    order.getOrderPositionsById().forEach(p -> productRepository.sellProducts(p.getProductByProductId().getId(), p.getQuantity()));
-    order.getOrderPositionsById().forEach(p -> p.setOrderByOrderId(saveOrder));
-    orderPositionRepository.saveAll(order.getOrderPositionsById());
+    order.getOrderPositions().forEach(p -> productRepository.sellProducts(p.getProduct().getId(), p.getQuantity()));
+    order.getOrderPositions().forEach(p -> p.setOrder(saveOrder));
+    orderPositionRepository.saveAll(order.getOrderPositions());
     shoppingCartRepository.deleteAllByCustomerId(customerId);
     List<ProductDTO> products = getProducts(order);
     recommendationService.addProductsRating(products);
@@ -83,14 +83,14 @@ public class OrderServiceImpl implements OrderService {
     OrderStatus status = orderStatusRepository
             .findById(statusId)
             .orElseThrow(() -> new ResourceNotFoundException("Status id=" + statusId + " could not be found"));
-    order.setOrderStatusByOrderStatusId(status);
+    order.setOrderStatus(status);
     return orderMapper.toOrderDto(orderRepository.save(order));
   }
 
   private List<ProductDTO> getProducts(Order order) {
-    return order.getOrderPositionsById()
+    return order.getOrderPositions()
             .stream()
-            .map(OrderPosition::getProductByProductId)
+            .map(OrderPosition::getProduct)
             .map(productMapper::toProductDto)
             .collect(Collectors.toList());
   }

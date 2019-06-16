@@ -61,7 +61,7 @@ public class CustomerServiceImpl implements CustomerService {
             .setEmail(customerDTO.getEmail())
             .setPhoneNumber(customerDTO.getPhoneNumber());
     AddressDTO addressDTO = customerDTO.getAddress();
-    customer.getAddressByAddressId()
+    customer.getAddress()
             .setStreet(addressDTO.getStreet())
             .setPostcode(addressDTO.getPostcode())
             .setCity(addressDTO.getCity());

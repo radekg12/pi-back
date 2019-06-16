@@ -20,6 +20,6 @@ public class OrderStatusCategory implements Serializable {
   private String name;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "orderStatusCategoryByOrderStatusCategoryId")
-  private Collection<OrderStatus> orderStatusesById;
+  @OneToMany(mappedBy = "orderStatusCategory")
+  private Collection<OrderStatus> orderStatuses;
 }

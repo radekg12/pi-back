@@ -41,7 +41,7 @@ public class ProductServiceImpl implements ProductService {
     repository.save(product);
     specificationPositions
             .forEach(position -> {
-              position.setProductByProductId(product);
+              position.setProduct(product);
               specificationPositionRepository.save(position);
             });
 
@@ -126,7 +126,7 @@ public class ProductServiceImpl implements ProductService {
             .forEach(specificationPositionRepository::delete);
 
     product.getSpecificationPositions()
-            .forEach(position -> position.setProductByProductId(product));
+            .forEach(position -> position.setProduct(product));
 
     Product savedProduct = repository.save(product);
     return mapper.toProductDto(savedProduct);

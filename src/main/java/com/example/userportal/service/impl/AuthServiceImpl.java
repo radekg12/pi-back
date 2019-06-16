@@ -61,10 +61,10 @@ public class AuthServiceImpl implements AuthService {
         }
         Customer customer = customerMapper.toCustomer(signUpRequest);
         customer.setPasswordHash(passwordEncoder.encode(customer.getPasswordHash()));
-        if (customer.getAddressByAddressId() == null) {
-            customer.setAddressByAddressId(createDefaultAddress());
+        if (customer.getAddress() == null) {
+            customer.setAddress(createDefaultAddress());
         }
-        addressRepository.save(customer.getAddressByAddressId());
+        addressRepository.save(customer.getAddress());
         Set<Authority> authorities = getDefaultUserAuthorities();
         customer.setAuthorities(authorities);
         customerRepository.save(customer);

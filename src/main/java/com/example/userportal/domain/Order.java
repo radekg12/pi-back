@@ -35,25 +35,25 @@ public class Order implements Serializable {
 
   @ManyToOne
   @JoinColumn(name = "order_status_id", referencedColumnName = "id", nullable = false)
-  private OrderStatus orderStatusByOrderStatusId;
+  private OrderStatus orderStatus;
 
   @ManyToOne
   @JoinColumn(name = "delivery_type_id", referencedColumnName = "id", nullable = false)
-  private DeliveryType deliveryTypeByDeliveryTypeId;
+  private DeliveryType deliveryType;
 
   @ManyToOne
   @JoinColumn(name = "payment_method_id", referencedColumnName = "id", nullable = false)
-  private PaymentMethod paymentMethodByPaymentMethodId;
+  private PaymentMethod paymentMethod;
 
   @ManyToOne
   @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
-  private Customer customerByCustomerId;
+  private Customer customer;
 
   @ManyToOne
   @JoinColumn(name = "delivery_address_id", referencedColumnName = "id", nullable = false)
-  private Address addressByDeliveryAddressId;
+  private Address address;
 
-  @OneToMany(mappedBy = "orderByOrderId")
-  private Collection<OrderPosition> orderPositionsById;
+  @OneToMany(mappedBy = "order")
+  private Collection<OrderPosition> orderPositions;
 
 }

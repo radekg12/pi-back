@@ -46,15 +46,15 @@ public class Customer extends AbstractAuditingEntity implements Serializable {
 
   @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "address_id", referencedColumnName = "id", nullable = false)
-  private Address addressByAddressId;
+  private Address address;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "customerByCustomerId")
-  private Collection<Order> ordersById;
+  @OneToMany(mappedBy = "customer")
+  private Collection<Order> orders;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "customerByCustomerId")
-  private Collection<ShoppingCartPosition> shoppingCartPositionsById;
+  @OneToMany(mappedBy = "customer")
+  private Collection<ShoppingCartPosition> shoppingCartPositions;
 
   @JsonIgnore
   @ManyToMany

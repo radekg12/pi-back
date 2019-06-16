@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
-  @Query("SELECT o.customerByCustomerId FROM Order o WHERE o.id=:orderId")
+  @Query("SELECT o.customer FROM Order o WHERE o.id=:orderId")
   Customer findCustomerByOrderId(@Param("orderId") int orderId);
 
   Optional<Customer> findOneByEmailIgnoreCase(String email);

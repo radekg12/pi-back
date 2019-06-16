@@ -26,20 +26,12 @@ public class ShoppingCartPosition implements Serializable {
   @Column(name = "quantity", nullable = false)
   private int quantity;
 
-  @Column(name = "product_id", nullable = false)
-//  @Column(name = "product_id", nullable = false)
-  private int productId;
-
-  @Column(name = "customer_id", nullable = false)
-//  @Column(name = "customer_id", nullable = false)
-  private int customerId;
-
   @ManyToOne
   @JoinColumn(name = "product_id", referencedColumnName = "id", insertable = false, updatable = false)
-  private Product productByProductId;
+  private Product product;
 
   @JsonIgnore
   @ManyToOne
   @JoinColumn(name = "customer_id", referencedColumnName = "id", insertable = false, updatable = false)
-  private Customer customerByCustomerId;
+  private Customer customer;
 }

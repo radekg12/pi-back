@@ -12,7 +12,6 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 public class Address extends AbstractAuditingEntity implements Serializable {
-
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,13 +25,4 @@ public class Address extends AbstractAuditingEntity implements Serializable {
 
   @Column(name = "postcode")
   private String postcode;
-
-//  @JsonIgnore
-//  @OneToMany(mappedBy = "addressByAddressId")
-//  private Collection<Customer> customerById;
-//
-//  @JsonIgnore
-//  @OneToMany(mappedBy = "addressByDeliveryAddressId")
-//  private Collection<Order> ordersById;
-
 }
