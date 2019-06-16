@@ -4,15 +4,12 @@ import com.example.userportal.domain.Product;
 import com.example.userportal.service.dto.ProductDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {ProductSubcategoryMapper.class, SpecificationPositionMapper.class})
 public interface ProductMapper {
-
-  ProductMapper MAPPER = Mappers.getMapper(ProductMapper.class);
 
   @Mapping(target = "subcategory", source = "productSubcategory")
   ProductDTO toProductDto(Product product);

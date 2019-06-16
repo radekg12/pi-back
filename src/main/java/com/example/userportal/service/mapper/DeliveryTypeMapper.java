@@ -4,14 +4,11 @@ import com.example.userportal.domain.DeliveryType;
 import com.example.userportal.service.dto.DeliveryTypeDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface DeliveryTypeMapper {
-
-  DeliveryTypeMapper MAPPER = Mappers.getMapper(DeliveryTypeMapper.class);
 
   DeliveryTypeDTO toDeliveryTypeDto(DeliveryType deliveryType);
 

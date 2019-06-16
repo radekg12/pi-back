@@ -19,7 +19,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.cors.CorsConfiguration;
@@ -44,7 +43,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   final private SecurityProblemSupport problemSupport;
   final private CustomUserDetailsService customUserDetailsService;
   final private JwtAuthenticationEntryPoint unauthorizedHandler;
-  final private AccessDeniedHandler accessDeniedHandler;
 
   @Bean
   public JwtAuthenticationFilter jwtAuthenticationFilter() {
