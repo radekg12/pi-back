@@ -3,8 +3,8 @@ package com.example.userportal.controller;
 import com.example.userportal.requestmodel.JwtAuthenticationResponse;
 import com.example.userportal.requestmodel.SignInRequest;
 import com.example.userportal.requestmodel.SignUpRequest;
+import com.example.userportal.service.AuthService;
 import com.example.userportal.service.dto.CustomerDTO;
-import com.example.userportal.service.impl.AuthServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,15 +18,14 @@ import javax.validation.Valid;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
+  final AuthService authService;
 
-  final AuthServiceImpl authService;
-
-  @PostMapping("/signin")
+  @PostMapping("/login")
   public JwtAuthenticationResponse authenticateUser(@Valid @RequestBody SignInRequest signInRequest) {
     return authService.authenticateUser(signInRequest);
   }
 
-  @PostMapping("/signup")
+  @PostMapping("/enrollment")
   public CustomerDTO registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
     return authService.registerUser(signUpRequest);
   }

@@ -21,7 +21,7 @@ public class AuditEventConverter {
     return auditEvents;
   }
 
-  public AuditEvent convertToAuditEvent(PersistentAuditEvent persistentAuditEvent) {
+  private AuditEvent convertToAuditEvent(PersistentAuditEvent persistentAuditEvent) {
     if (persistentAuditEvent == null) {
       return null;
     }
@@ -29,7 +29,7 @@ public class AuditEventConverter {
             persistentAuditEvent.getAuditEventType(), convertDataToObjects(persistentAuditEvent.getData()));
   }
 
-  public Map<String, Object> convertDataToObjects(Map<String, String> data) {
+  private Map<String, Object> convertDataToObjects(Map<String, String> data) {
     Map<String, Object> results = new HashMap<>();
 
     if (data != null) {
@@ -45,7 +45,6 @@ public class AuditEventConverter {
 
     if (data != null) {
       for (Map.Entry<String, Object> entry : data.entrySet()) {
-        // Extract the data that will be saved.
         if (entry.getValue() instanceof WebAuthenticationDetails) {
           WebAuthenticationDetails authenticationDetails = (WebAuthenticationDetails) entry.getValue();
           results.put("remoteAddress", authenticationDetails.getRemoteAddress());
