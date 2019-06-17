@@ -20,5 +20,5 @@ public interface OrderService {
 
   OrderDTO findById(int id);
 
-  OrderDTO updateStatus(int orderId, int statusId);
+  OrderDTO updateOrderStatus(int orderId, int statusId);
 }

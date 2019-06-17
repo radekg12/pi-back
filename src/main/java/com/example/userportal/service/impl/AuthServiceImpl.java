@@ -8,13 +8,13 @@ import com.example.userportal.exception.EmailNotFoundException;
 import com.example.userportal.exception.InvalidPasswordException;
 import com.example.userportal.repository.AddressRepository;
 import com.example.userportal.repository.AuthorityRepository;
+import com.example.userportal.repository.CustomerRepository;
 import com.example.userportal.requestmodel.JwtAuthenticationResponse;
 import com.example.userportal.requestmodel.SignInRequest;
 import com.example.userportal.requestmodel.SignUpRequest;
 import com.example.userportal.security.jwt.AuthoritiesConstants;
 import com.example.userportal.security.jwt.JwtTokenProvider;
 import com.example.userportal.service.AuthService;
-import com.example.userportal.service.CustomerService;
 import com.example.userportal.service.dto.CustomerDTO;
 import com.example.userportal.service.mapper.CustomerMapper;
 import lombok.RequiredArgsConstructor;
@@ -33,61 +33,70 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthServiceImpl implements AuthService {
+    private final AuthenticationManager authenticationManager;
+    private final AuthorityRepository authorityRepository;
+    private final AddressRepository addressRepository;
+    private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider tokenProvider;
+    private final CustomerMapper customerMapper;
 
-  private final AuthenticationManager authenticationManager;
-  private final AuthorityRepository authorityRepository;
-  private final AddressRepository addressRepository;
-  private final CustomerService customerService;
-  private final PasswordEncoder passwordEncoder;
-  private final JwtTokenProvider tokenProvider;
-  private final CustomerMapper customerMapper;
-
-
-  @Override
-  public JwtAuthenticationResponse authenticateUser(SignInRequest signInRequest) {
-
-    if (!customerService.existsByEmail(signInRequest.getUsername())) {
-      throw new EmailNotFoundException();
+    @Override
+    public JwtAuthenticationResponse authenticateUser(SignInRequest signInRequest) {
+        if (!customerRepository.existsByEmail(signInRequest.getUsername())) {
+            throw new EmailNotFoundException();
+        }
+        Set<Authority> authorities = getCustomerAuthorities(signInRequest.getUsername());
+        Authentication authentication = getAuthenticationFromRequest(signInRequest);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = tokenProvider.createToken(authentication, signInRequest.getRememberMe());
+        return new JwtAuthenticationResponse(token, signInRequest.getRememberMe(), authorities);
     }
 
-    Set<Authority> authorities = customerService
-            .findOneByEmail(signInRequest.getUsername())
-            .map(Customer::getAuthorities)
-            .orElseThrow(InvalidPasswordException::new);
-
-    Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                    signInRequest.getUsername(),
-                    signInRequest.getPassword()
-            )
-    );
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    String jwt = tokenProvider.createToken(authentication, signInRequest.getRememberMe());
-    return new JwtAuthenticationResponse(jwt, signInRequest.getRememberMe(), authorities);
-  }
-
-  @Override
-  @Transactional
-  public CustomerDTO registerUser(SignUpRequest signUpRequest) {
-    if (customerService.existsByEmail(signUpRequest.getEmail())) {
-      throw new EmailAlreadyUsedException();
+    @Override
+    @Transactional
+    public CustomerDTO registerUser(SignUpRequest signUpRequest) {
+        if (customerRepository.existsByEmail(signUpRequest.getEmail())) {
+            throw new EmailAlreadyUsedException();
+        }
+        Customer customer = customerMapper.toCustomer(signUpRequest);
+        customer.setPasswordHash(passwordEncoder.encode(customer.getPasswordHash()));
+        if (customer.getAddress() == null) {
+            customer.setAddress(createDefaultAddress());
+        }
+        addressRepository.save(customer.getAddress());
+        Set<Authority> authorities = getDefaultUserAuthorities();
+        customer.setAuthorities(authorities);
+        customerRepository.save(customer);
+        return customerMapper.toCustomerDto(customer);
     }
 
-    Customer customer = customerMapper.toCustomer(signUpRequest);
-    customer.setPasswordHash(passwordEncoder.encode(customer.getPasswordHash()));
-    if (customer.getAddressByAddressId() == null)
-      customer.setAddressByAddressId(new Address()
-              .setCity("")
-              .setStreet("")
-              .setPostcode("")
-      );
+    private Set<Authority> getCustomerAuthorities(String username) {
+        return customerRepository
+                .findOneByEmailIgnoreCase(username)
+                .map(Customer::getAuthorities)
+                .orElseThrow(InvalidPasswordException::new);
+    }
 
-    addressRepository.save(customer.getAddressByAddressId());
+    private Authentication getAuthenticationFromRequest(SignInRequest signInRequest) {
+        String username = signInRequest.getUsername();
+        String password = signInRequest.getPassword();
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+        return authenticationManager.authenticate(token);
+    }
 
-    Set<Authority> authorities = new HashSet<>();
-    authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
-    customer.setAuthorities(authorities);
-    customerService.updateCustomer(customer);
-    return customerMapper.toCustomerDto(customer);
-  }
+    private Address createDefaultAddress() {
+        return new Address()
+                .setCity("")
+                .setStreet("")
+                .setPostcode("");
+    }
+
+    private Set<Authority> getDefaultUserAuthorities() {
+        Set<Authority> authorities = new HashSet<>();
+        authorityRepository
+                .findById(AuthoritiesConstants.USER)
+                .ifPresent(authorities::add);
+        return authorities;
+    }
 }

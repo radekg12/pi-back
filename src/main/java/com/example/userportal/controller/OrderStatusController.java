@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping({"/status"})
+@RequestMapping("/statuses")
 public class OrderStatusController {
 
   private final OrderStatusService service;

@@ -11,7 +11,6 @@ import java.util.Collection;
 @Entity
 @Table(name = "order_status", schema = "testdb")
 public class OrderStatus implements Serializable {
-
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +20,10 @@ public class OrderStatus implements Serializable {
   private String name;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "orderStatusByOrderStatusId")
-  private Collection<Order> ordersById;
+  @OneToMany(mappedBy = "orderStatus")
+  private Collection<Order> orders;
 
   @ManyToOne
   @JoinColumn(name = "order_status_category_id", referencedColumnName = "id", nullable = false)
-  private OrderStatusCategory orderStatusCategoryByOrderStatusCategoryId;
+  private OrderStatusCategory orderStatusCategory;
 }

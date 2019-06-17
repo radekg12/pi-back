@@ -44,7 +44,7 @@ public class Product extends AbstractAuditingEntity implements Serializable {
   private Boolean available = true;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "productByProductId")
+  @OneToMany(mappedBy = "product")
   private Collection<OrderPosition> orderPositions;
 
   @ManyToOne
@@ -52,10 +52,10 @@ public class Product extends AbstractAuditingEntity implements Serializable {
   private ProductSubcategory productSubcategory;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "productByProductId")
+  @OneToMany(mappedBy = "product")
   private Collection<ShoppingCartPosition> shoppingCartPositions;
 
-  @OneToMany(mappedBy = "productByProductId", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
   private Collection<SpecificationPosition> specificationPositions;
 
 }

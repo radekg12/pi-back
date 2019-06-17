@@ -18,7 +18,8 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, I
 
   @Modifying
   @Query("UPDATE Product p SET p.logicalQuantityInStock = p.logicalQuantityInStock - :quantity WHERE p.id = :productId")
-  Integer sellProducts(@Param("productId") int productId, @Param("quantity") int quantity);
+  Integer sellProducts(@Param("productId") int productId,
+                       @Param("quantity") int quantity);
 
   @Query("SELECT p FROM Product p WHERE p.productSubcategory.id=:subcategoryId")
   Iterable<Product> findAllByProductSubcategoryId(@Param("subcategoryId") int subcategoryId);

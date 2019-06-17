@@ -1,6 +1,5 @@
 package com.example.userportal.controller;
 
-
 import com.example.userportal.service.CustomerService;
 import com.example.userportal.service.dto.CustomerDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,44 +10,36 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping({"/customer"})
+@RequestMapping("/customers")
 public class CustomerController {
+    private final CustomerService customerService;
 
-  private final CustomerService customerService;
+    @Autowired
+    public CustomerController(CustomerService customerService) {
+        this.customerService = customerService;
+    }
 
-  @Autowired
-  public CustomerController(CustomerService customerService) {
-    this.customerService = customerService;
-  }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping
+    public List<CustomerDTO> getCustomers() {
+        return customerService.getCustomerDTOs();
+    }
 
-  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-  @GetMapping
-  public CustomerDTO getCustomer() {
-    return customerService.getCurrentCustomerDTO();
-  }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/{id}")
+    public CustomerDTO getCustomer(@PathVariable("id") int id) {
+        return customerService.getCustomerDTO(id);
+    }
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
-  @GetMapping(path = "/all")
-  public List<CustomerDTO> getCustomers() {
-    return customerService.getCustomerDTOs();
-  }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/order/{id}")
+    public CustomerDTO getCustomersByOrder(@PathVariable("id") int orderId) {
+        return customerService.getCustomerByOrder(orderId);
+    }
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
-  @GetMapping(path = "/{id}")
-  public CustomerDTO getCustomer(@PathVariable("id") int id) {
-    return customerService.getCustomerDTO(id);
-  }
-
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
-  @GetMapping(path = "/byOrderId/{id}")
-  public CustomerDTO getCustomers(@PathVariable("id") int orderId) {
-    return customerService.getCustomerByOrder(orderId);
-  }
-
-  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-  @PutMapping
-  public CustomerDTO updateCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
-    return customerService.updateCustomer(customerDTO);
-  }
-
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @PutMapping
+    public CustomerDTO updateCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
+        return customerService.updateCustomer(customerDTO);
+    }
 }

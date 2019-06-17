@@ -10,11 +10,11 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = ProductMapper.class)
 public interface OrderPositionMapper {
 
-  @Mapping(target = "product", source = "productByProductId")
+  @Mapping(target = "product", source = "product")
   OrderPositionDTO toOrderPositionDto(OrderPosition orderPosition);
 
-  @Mapping(target = "orderByOrderId", ignore = true)
-  @Mapping(target = "productByProductId", source = "product")
+  @Mapping(target = "order", ignore = true)
+  @Mapping(target = "product", source = "product")
   OrderPosition toOrderPosition(OrderPositionDTO orderPositionDTO);
 
   List<OrderPositionDTO> toOrderPositionDtos(List<OrderPosition> orderPosition);

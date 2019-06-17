@@ -7,22 +7,25 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {OrderStatusMapper.class, DeliveryTypeMapper.class, PaymentMethodMapper.class, AddressMapper.class, OrderPositionMapper.class})
+@Mapper(componentModel = "spring", uses = {
+        OrderStatusMapper.class, DeliveryTypeMapper.class,
+        PaymentMethodMapper.class, AddressMapper.class, OrderPositionMapper.class
+})
 public interface OrderMapper {
 
-  @Mapping(target = "address", source = "addressByDeliveryAddressId")
-  @Mapping(target = "orderStatus", source = "orderStatusByOrderStatusId")
-  @Mapping(target = "deliveryType", source = "deliveryTypeByDeliveryTypeId")
-  @Mapping(target = "paymentMethod", source = "paymentMethodByPaymentMethodId")
-  @Mapping(target = "orderPositions", source = "orderPositionsById")
+  @Mapping(target = "address", source = "address")
+  @Mapping(target = "orderStatus", source = "orderStatus")
+  @Mapping(target = "deliveryType", source = "deliveryType")
+  @Mapping(target = "paymentMethod", source = "paymentMethod")
+  @Mapping(target = "orderPositions", source = "orderPositions")
   OrderDTO toOrderDto(Order order);
 
-  @Mapping(target = "customerByCustomerId", ignore = true)
-  @Mapping(target = "addressByDeliveryAddressId", source = "address")
-  @Mapping(target = "orderStatusByOrderStatusId", source = "orderStatus")
-  @Mapping(target = "deliveryTypeByDeliveryTypeId", source = "deliveryType")
-  @Mapping(target = "paymentMethodByPaymentMethodId", source = "paymentMethod")
-  @Mapping(target = "orderPositionsById", source = "orderPositions")
+  @Mapping(target = "customer", ignore = true)
+  @Mapping(target = "address", source = "address")
+  @Mapping(target = "orderStatus", source = "orderStatus")
+  @Mapping(target = "deliveryType", source = "deliveryType")
+  @Mapping(target = "paymentMethod", source = "paymentMethod")
+  @Mapping(target = "orderPositions", source = "orderPositions")
   Order toOrder(OrderDTO orderDTO);
 
   List<OrderDTO> toOrderDtos(List<Order> orders);

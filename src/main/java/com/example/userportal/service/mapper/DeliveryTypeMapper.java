@@ -12,7 +12,7 @@ public interface DeliveryTypeMapper {
 
   DeliveryTypeDTO toDeliveryTypeDto(DeliveryType deliveryType);
 
-  @Mapping(target = "ordersById", ignore = true)
+  @Mapping(target = "orders", ignore = true)
   DeliveryType toDeliveryType(DeliveryTypeDTO deliveryTypeDTO);
 
   List<DeliveryTypeDTO> toDeliveryTypeDtos(List<DeliveryType> deliveryTypes);

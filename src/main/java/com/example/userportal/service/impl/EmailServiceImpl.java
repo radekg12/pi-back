@@ -4,6 +4,8 @@ import com.example.userportal.service.CustomerService;
 import com.example.userportal.service.EmailService;
 import com.example.userportal.service.dto.SupportDTO;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -19,12 +21,14 @@ import javax.mail.internet.MimeMessage;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmailServiceImpl implements EmailService {
-  @Value("${spring.mail.username}")
-  private String mailTo;
+  private static Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
 
-  public final JavaMailSender emailSender;
+  private final JavaMailSender emailSender;
   private final TemplateEngine templateEngine;
   private final CustomerService customerService;
+
+  @Value("${spring.mail.username}")
+  private String mailTo;
 
   @Override
   public void sendSupportEmail(SupportDTO supportDTO) {
@@ -38,11 +42,9 @@ public class EmailServiceImpl implements EmailService {
       helper.setFrom(mailFrom);
       helper.setSubject("Wsparcie HurtPol");
       helper.setText(content, true);
-
       helper.addInline("logo.jpg", new ClassPathResource("templates/logo.jpg"));
-
     } catch (MessagingException e) {
-      e.printStackTrace();
+      logger.error("Error during mail creation.", e);
     }
     emailSender.send(mail);
   }

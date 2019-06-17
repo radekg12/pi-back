@@ -12,7 +12,7 @@ public interface OrderStatusCategoryMapper {
 
   OrderStatusCategoryDTO toOrderStatusCategoryDto(OrderStatusCategory orderStatusCategory);
 
-  @Mapping(target = "orderStatusesById", ignore = true)
+  @Mapping(target = "orderStatuses", ignore = true)
   OrderStatusCategory toOrderStatusCategory(OrderStatusCategoryDTO orderStatusCategoryDTO);
 
   List<OrderStatusCategoryDTO> toOrderStatusCategoryDtos(List<OrderStatusCategory> orderStatusCategories);

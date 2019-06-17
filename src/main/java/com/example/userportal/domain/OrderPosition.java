@@ -31,11 +31,11 @@ public class OrderPosition implements Serializable {
 
   @ManyToOne
   @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
-  private Product productByProductId;
+  private Product product;
 
   @JsonIgnore
   @ManyToOne
   @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false)
-  private Order orderByOrderId;
+  private Order order;
 
 }

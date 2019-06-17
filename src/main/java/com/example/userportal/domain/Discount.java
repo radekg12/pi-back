@@ -8,7 +8,6 @@ import java.io.Serializable;
 @Data
 @Entity
 public class Discount implements Serializable {
-
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)

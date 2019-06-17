@@ -4,7 +4,6 @@ import com.example.userportal.domain.Customer;
 import com.example.userportal.service.dto.CustomerDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CustomerService {
 
@@ -20,9 +19,4 @@ public interface CustomerService {
 
   CustomerDTO updateCustomer(CustomerDTO customerDTO);
 
-  Customer updateCustomer(Customer customer);
-
-  Optional<Customer> findOneByEmail(String email);
-
-  boolean existsByEmail(String email);
 }

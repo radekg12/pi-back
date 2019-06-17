@@ -12,7 +12,6 @@ import java.io.Serializable;
 @Entity
 @Table(name = "authority", schema = "testdb")
 public class Authority implements Serializable {
-
   @Id
   @Column(name = "name")
   private String roleName;

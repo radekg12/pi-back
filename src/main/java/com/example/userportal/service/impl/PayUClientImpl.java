@@ -177,7 +177,7 @@ public class PayUClientImpl implements PayUClient {
     shoppingCartPositionDtos.forEach(p -> {
       ProductDTO productDto = p.getProduct();
       OrderPosition orderPosition = OrderPosition.builder()
-              .productByProductId(productMapper.toProduct(productDto))
+              .product(productMapper.toProduct(productDto))
               .quantity(p.getQuantity())
               .unitPrice(p.getProduct().getUnitPrice())
               .build();
@@ -187,13 +187,13 @@ public class PayUClientImpl implements PayUClient {
     Order order = Order.builder()
             .dateOfOrder(Timestamp.valueOf(LocalDateTime.now()))
             .dateOfDelivery(Timestamp.valueOf(LocalDateTime.now().plusDays(3)))
-            .orderPositionsById(orderProducts)
-            .addressByDeliveryAddressId(address)
-            .deliveryTypeByDeliveryTypeId(deliveryTypeMapper.toDeliveryType(payUOrderDTO.getDeliveryType()))
-            .paymentMethodByPaymentMethodId(paymentMethodMapper.toPaymentMethod(payUOrderDTO.getPaymentMethod()))
+            .orderPositions(orderProducts)
+            .address(address)
+            .deliveryType(deliveryTypeMapper.toDeliveryType(payUOrderDTO.getDeliveryType()))
+            .paymentMethod(paymentMethodMapper.toPaymentMethod(payUOrderDTO.getPaymentMethod()))
             .totalAmount(totalAmount)
-            .orderStatusByOrderStatusId(orderStatus)
-            .customerByCustomerId(customer)
+            .orderStatus(orderStatus)
+            .customer(customer)
             .build();
 
     orderService.saveOrderAndCleanShoppingCart(order, customer.getId());
@@ -237,10 +237,10 @@ public class PayUClientImpl implements PayUClient {
     switch (notify.getOrder().getStatus()) {
       case PENDING:
       case CANCELED:
-        order = orderService.updateStatus(Integer.parseInt(notify.getOrder().getExtOrderId()), 5);
+        order = orderService.updateOrderStatus(Integer.parseInt(notify.getOrder().getExtOrderId()), 5);
         break;
       case COMPLETED:
-        order = orderService.updateStatus(Integer.parseInt(notify.getOrder().getExtOrderId()), 2);
+        order = orderService.updateOrderStatus(Integer.parseInt(notify.getOrder().getExtOrderId()), 2);
         break;
     }
     return order;

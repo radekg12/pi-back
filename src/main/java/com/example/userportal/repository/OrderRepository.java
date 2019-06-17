@@ -1,12 +1,14 @@
 package com.example.userportal.repository;
 
 import com.example.userportal.domain.Order;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-public interface OrderRepository extends CrudRepository<Order, Integer> {
+import java.util.List;
 
-  @Query("SELECT o FROM Order o WHERE o.customerByCustomerId.id=:customerId ORDER BY o.dateOfOrder DESC")
-  Iterable<Order> findAllByCustomerId(@Param("customerId") int customerId);
+public interface OrderRepository extends JpaRepository<Order, Integer> {
+
+  @Query("SELECT o FROM Order o WHERE o.customer.id=:customerId ORDER BY o.dateOfOrder DESC")
+  List<Order> findAllByCustomerId(@Param("customerId") int customerId);
 }

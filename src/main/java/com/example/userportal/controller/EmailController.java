@@ -12,30 +12,29 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping({"/support"})
+@RequestMapping("/support")
 public class EmailController {
-  private final EmailService emailService;
-  @Value("${spring.mail.username}")
-  private String companyMail;
+    private final EmailService emailService;
 
-  @Autowired
-  public EmailController(EmailService emailService) {
-    this.emailService = emailService;
-  }
+    @Value("${spring.mail.username}")
+    private String companyMail;
 
-  @PreAuthorize("hasRole('ROLE_USER')")
-  @GetMapping
-  public String getCompanyMail() {
-    return new Gson().toJson(companyMail);
-  }
+    @Autowired
+    public EmailController(EmailService emailService) {
+        this.emailService = emailService;
+    }
 
-  @PreAuthorize("hasRole('ROLE_USER')")
-  @PostMapping
-  public String send(@Valid @RequestBody SupportDTO supportDTO) {
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping
+    public String getCompanyMail() {
+        return new Gson().toJson(companyMail);
+    }
 
-    emailService.sendSupportEmail(supportDTO);
-
-    Gson gson = new GsonBuilder().create();
-    return gson.toJson("successful");
-  }
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @PostMapping
+    public String send(@Valid @RequestBody SupportDTO supportDTO) {
+        emailService.sendSupportEmail(supportDTO);
+        Gson gson = new GsonBuilder().create();
+        return gson.toJson("successful");
+    }
 }

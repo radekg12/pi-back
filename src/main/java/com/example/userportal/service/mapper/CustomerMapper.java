@@ -11,11 +11,11 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = AddressMapper.class)
 public interface CustomerMapper {
 
-  @Mapping(target = "address", source = "addressByAddressId")
+  @Mapping(target = "address", source = "address")
   CustomerDTO toCustomerDto(Customer customer);
 
-  @Mapping(target = "ordersById", ignore = true)
-  @Mapping(target = "shoppingCartPositionsById", ignore = true)
+  @Mapping(target = "orders", ignore = true)
+  @Mapping(target = "shoppingCartPositions", ignore = true)
   Customer toCustomer(CustomerDTO customerDTO);
 
   List<CustomerDTO> toCustomerDtos(List<Customer> customers);
@@ -23,8 +23,8 @@ public interface CustomerMapper {
   List<Customer> toCustomers(List<CustomerDTO> customerDTOS);
 
   @Mapping(target = "passwordHash", source = "password")
-  @Mapping(target = "shoppingCartPositionsById", ignore = true)
-  @Mapping(target = "ordersById", ignore = true)
-  @Mapping(target = "addressByAddressId", source = "address")
+  @Mapping(target = "shoppingCartPositions", ignore = true)
+  @Mapping(target = "orders", ignore = true)
+  @Mapping(target = "address", source = "address")
   Customer toCustomer(SignUpRequest signUpRequest);
 }

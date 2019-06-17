@@ -10,10 +10,10 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = OrderStatusMapper.class)
 public interface OrderStatusCategoryAllMapper {
 
-  @Mapping(target = "orderStatuses", source = "orderStatusesById")
+  @Mapping(target = "orderStatuses", source = "orderStatuses")
   OrderStatusCategoryAllDTO toOrderStatusCategoryAllDto(OrderStatusCategory orderStatusCategory);
 
-  @Mapping(target = "orderStatusesById", source = "orderStatuses")
+  @Mapping(target = "orderStatuses", source = "orderStatuses")
   OrderStatusCategory toOrderStatusCategory(OrderStatusCategoryAllDTO orderStatusCategoryAllDTO);
 
   List<OrderStatusCategoryAllDTO> toOrderStatusCategoryAllDtos(List<OrderStatusCategory> orderStatusCategories);
