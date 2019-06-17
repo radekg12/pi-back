@@ -3,24 +3,18 @@ package com.example.userportal.controller;
 import com.example.userportal.requestmodel.payu.PayUOrderCreateResponse;
 import com.example.userportal.requestmodel.payu.PayUOrderNotifyRequest;
 import com.example.userportal.service.PayUClient;
-import com.example.userportal.service.dto.GooglePayOrderDTO;
 import com.example.userportal.service.dto.OrderDTO;
 import com.example.userportal.service.dto.PayUOrderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/payu")
+@RequestMapping(value = "payment/payu")
 public class PayUController {
-
   private final PayUClient payUClient;
-  @Value("${payu.secondKey}")
-  private String secondKey;
 
   @Autowired
   PayUController(PayUClient payUClient) {
@@ -28,15 +22,9 @@ public class PayUController {
   }
 
   @PreAuthorize("hasRole('ROLE_USER')")
-  @PostMapping(value = "/make/payment")
-  public PayUOrderCreateResponse makePayment(@Valid @RequestBody PayUOrderDTO payUOrderDTO, HttpServletRequest request) {
-    return payUClient.payForOrder(request, payUOrderDTO);
-  }
-
-  @PreAuthorize("hasRole('ROLE_USER')")
-  @PostMapping(value = "/make/payment/googlepay")
-  public PayUOrderCreateResponse makePaymentWithGooglePay(@Valid @RequestBody GooglePayOrderDTO googlePayOrder, HttpServletRequest request) {
-    return payUClient.payForOrderWithGooglePay(request, googlePayOrder);
+  @PostMapping
+  public PayUOrderCreateResponse makePayment(@Valid @RequestBody PayUOrderDTO payUOrderDTO) {
+    return payUClient.payForOrder(payUOrderDTO);
   }
 
   @PostMapping(value = "/notify")

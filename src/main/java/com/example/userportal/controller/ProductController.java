@@ -4,10 +4,7 @@ import com.example.userportal.service.ProductService;
 import com.example.userportal.service.dto.ProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping({"/products"})
 public class ProductController {
-
   private final ProductService productService;
 
   @Autowired
@@ -25,20 +21,7 @@ public class ProductController {
     this.productService = productService;
   }
 
-
-  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_WORKER')")
-  @PostMapping
-  public ProductDTO create(@Valid @RequestBody ProductDTO productDto) {
-    return productService.create(productDto);
-  }
-
-  @GetMapping(path = {"/detail/{id}"})
-  public ProductDTO findOne(
-          @PathVariable("id") int id) {
-    return productService.findById(id);
-  }
-
-  @GetMapping(path = "all")
+  @GetMapping(path = "/all")
   public List<ProductDTO> findAll() {
     return productService.findAll();
   }
@@ -48,52 +31,31 @@ public class ProductController {
     return productService.findPaginated(pageRequest);
   }
 
-  @GetMapping(path = {"/category/{category}"})
-  public Page<ProductDTO> findAllByCategoryPage(@PathVariable("category") int categoryId, Pageable pageRequest) {
+  @GetMapping(path = {"/categories/{categoryId}"})
+  public Page<ProductDTO> findAllByCategoryPage(@PathVariable("categoryId") int categoryId, Pageable pageRequest) {
     return productService.findCategoryPaginated(categoryId, pageRequest);
   }
 
-  @GetMapping(path = {"/{subcategory}"})
-  public Page<ProductDTO> findAllBySubcategoryPage(@PathVariable("subcategory") int subcategoryId, Pageable pageRequest) {
+  @GetMapping(path = {"/subcategories/{subcategoryId}"})
+  public Page<ProductDTO> findAllBySubcategoryPage(@PathVariable("subcategoryId") int subcategoryId, Pageable pageRequest) {
     return productService.findSubcategoryPaginated(subcategoryId, pageRequest);
   }
 
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_WORKER')")
-  @PostMapping({"/warehouse/take/{id}"})
-  public ProductDTO takeProductFromWarehouse(@PathVariable("id") int id,
-                                             @RequestParam(value = "quantity") int quantity) {
-    return productService.updatePhysicalQuantity(id, quantity);
-  }
-
-  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_WORKER')")
-  @PostMapping({"/warehouse/put/{id}"})
-  public ProductDTO putProductToWarehouse(@PathVariable("id") int id,
-                                          @RequestParam(value = "quantity") int quantity) {
-    return productService.updatePhysicalQuantity(id, quantity * (-1));
+  @PostMapping
+  public ProductDTO createNewProduct(@Valid @RequestBody ProductDTO productDto) {
+    return productService.create(productDto);
   }
 
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_WORKER')")
   @PutMapping
-  public ProductDTO update(
-          @Valid @RequestBody ProductDTO productDto) {
+  public ProductDTO updateProduct(@Valid @RequestBody ProductDTO productDto) {
     return productService.update(productDto);
   }
 
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_WORKER')")
   @DeleteMapping(path = "/{id}")
-  public ProductDTO delete(
-          @PathVariable("id") int id) {
+  public ProductDTO deleteProduct(@PathVariable("id") int id) {
     return productService.delete(id);
-  }
-
-  @GetMapping(path = "/{id}/recommendation")
-  public List<ProductDTO> getRecommendation(@PathVariable("id") int productId) {
-    List<ProductDTO> products;
-    try {
-      products = productService.getProductRecommendation(productId);
-    } catch (RedisConnectionFailureException e) {
-      products = productService.findPaginated(PageRequest.of(0, 8, Sort.Direction.ASC, "id")).getContent();
-    }
-    return products;
   }
 }

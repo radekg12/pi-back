@@ -95,7 +95,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/auth/**",
                     "/menu/**",
                     "/products/**",
-                    "/payu/notify",
+                    "/payment/payu/notify",
                     "/configuration/ui",
                     "/webjars/**",
                     "/swagger-ui.html",

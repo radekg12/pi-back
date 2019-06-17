@@ -15,7 +15,6 @@ public interface CustomerMapper {
   CustomerDTO toCustomerDto(Customer customer);
 
   @Mapping(target = "orders", ignore = true)
-  @Mapping(target = "shoppingCartPositions", ignore = true)
   Customer toCustomer(CustomerDTO customerDTO);
 
   List<CustomerDTO> toCustomerDtos(List<Customer> customers);
@@ -23,7 +22,6 @@ public interface CustomerMapper {
   List<Customer> toCustomers(List<CustomerDTO> customerDTOS);
 
   @Mapping(target = "passwordHash", source = "password")
-  @Mapping(target = "shoppingCartPositions", ignore = true)
   @Mapping(target = "orders", ignore = true)
   @Mapping(target = "address", source = "address")
   Customer toCustomer(SignUpRequest signUpRequest);

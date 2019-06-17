@@ -2,6 +2,7 @@ package com.example.userportal.service.impl;
 
 import com.example.userportal.domain.Customer;
 import com.example.userportal.exception.ResourceNotFoundException;
+import com.example.userportal.exception.UnauthorizedCurrentUserException;
 import com.example.userportal.repository.CustomerRepository;
 import com.example.userportal.security.SecurityUtils;
 import com.example.userportal.service.CustomerService;
@@ -66,6 +67,15 @@ public class CustomerServiceImpl implements CustomerService {
             .setPostcode(addressDTO.getPostcode())
             .setCity(addressDTO.getCity());
     return mapper.toCustomerDto(customer);
+  }
+
+  @Transactional
+  @Override
+  public CustomerDTO updateCurrentCustomer(CustomerDTO customerDTO) {
+    CustomerDTO currentCustomerDTO = getCurrentCustomerDTO();
+    if (!currentCustomerDTO.getId().equals(customerDTO.getId()))
+      throw new UnauthorizedCurrentUserException();
+    return updateCustomer(customerDTO);
   }
 
   private Customer findByEmail(String email) {

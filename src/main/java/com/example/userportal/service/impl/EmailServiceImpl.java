@@ -1,11 +1,11 @@
 package com.example.userportal.service.impl;
 
+import com.example.userportal.exception.InternalServerErrorException;
 import com.example.userportal.service.CustomerService;
 import com.example.userportal.service.EmailService;
 import com.example.userportal.service.dto.SupportDTO;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -19,9 +19,9 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Service
+@Log4j2
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmailServiceImpl implements EmailService {
-  private static Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
 
   private final JavaMailSender emailSender;
   private final TemplateEngine templateEngine;
@@ -44,7 +44,8 @@ public class EmailServiceImpl implements EmailService {
       helper.setText(content, true);
       helper.addInline("logo.jpg", new ClassPathResource("templates/logo.jpg"));
     } catch (MessagingException e) {
-      logger.error("Error during mail creation.", e);
+      log.error("Error during mail creation.", e);
+      throw new InternalServerErrorException("Error during mail creation.");
     }
     emailSender.send(mail);
   }
