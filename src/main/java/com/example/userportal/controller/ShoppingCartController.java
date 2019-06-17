@@ -1,6 +1,6 @@
 package com.example.userportal.controller;
 
-import com.example.userportal.requestmodel.UpdateShoppingCartRequest;
+import com.example.userportal.requestmodel.ShoppingCartUpdateRequest;
 import com.example.userportal.service.ShoppingCartService;
 import com.example.userportal.service.dto.ShoppingCartPositionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class ShoppingCartController {
 
   @PreAuthorize("hasRole('ROLE_USER')")
   @PutMapping
-  public ShoppingCartPositionDTO updatePosition(@Valid @RequestBody UpdateShoppingCartRequest request) {
+  public ShoppingCartPositionDTO updatePosition(@Valid @RequestBody ShoppingCartUpdateRequest request) {
     return shoppingCartService.updatePositionQuantity(request.getProductId(), request.getQuantity());
   }
 

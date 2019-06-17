@@ -1,6 +1,6 @@
 package com.example.userportal.service;
 
-import com.example.userportal.requestmodel.UpdateWarehouseStateRequest;
+import com.example.userportal.requestmodel.WarehouseStateUpdateRequest;
 import com.example.userportal.service.dto.ProductDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,9 +25,9 @@ public interface ProductService {
 
   ProductDTO update(ProductDTO productDto);
 
-  ProductDTO takeProductFromWarehouse(UpdateWarehouseStateRequest request);
+  ProductDTO takeProductFromWarehouse(WarehouseStateUpdateRequest request);
 
-  ProductDTO putProductIntoWarehouse(UpdateWarehouseStateRequest request);
+  ProductDTO putProductIntoWarehouse(WarehouseStateUpdateRequest request);
 
   List<ProductDTO> getProductRecommendation(int productId) throws RedisConnectionFailureException;
 }

@@ -1,6 +1,6 @@
 package com.example.userportal.controller;
 
-import com.example.userportal.requestmodel.UpdateWarehouseStateRequest;
+import com.example.userportal.requestmodel.WarehouseStateUpdateRequest;
 import com.example.userportal.service.ProductService;
 import com.example.userportal.service.dto.ProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +23,14 @@ public class WarehouseController {
   }
 
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_WORKER')")
-  @PutMapping({"/pickup"})
-  public ProductDTO putProductIntoWarehouse(@Valid @RequestBody UpdateWarehouseStateRequest request) {
+  @PutMapping({"/pick-up"})
+  public ProductDTO putProductIntoWarehouse(@Valid @RequestBody WarehouseStateUpdateRequest request) {
     return productService.putProductIntoWarehouse(request);
   }
 
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_WORKER')")
   @PutMapping({"/delivery"})
-  public ProductDTO takeProductFromWarehouse(@Valid @RequestBody UpdateWarehouseStateRequest request) {
+  public ProductDTO takeProductFromWarehouse(@Valid @RequestBody WarehouseStateUpdateRequest request) {
     return productService.takeProductFromWarehouse(request);
   }
 }

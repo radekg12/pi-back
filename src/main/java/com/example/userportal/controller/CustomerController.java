@@ -37,7 +37,7 @@ public class CustomerController {
         return customerService.getCustomerByOrder(orderId);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PutMapping
     public CustomerDTO updateCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
         return customerService.updateCustomer(customerDTO);

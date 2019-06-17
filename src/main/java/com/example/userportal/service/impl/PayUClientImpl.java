@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -45,6 +46,7 @@ public class PayUClientImpl implements PayUClient {
   private final AddressMapper addressMapper;
   private final DeliveryTypeMapper deliveryTypeMapper;
   private final PaymentMethodMapper paymentMethodMapper;
+  private final HttpServletRequest request;
 
   @Value("${payu.clientId}")
   private String clientId;
@@ -142,10 +144,12 @@ public class PayUClientImpl implements PayUClient {
                                                           List<PayUProduct> payUProducts,
                                                           Customer customer,
                                                           String googlePaymentToken) {
+    String ipAddress = request.getRemoteHost();
     PayUOrderCreateRequest orderCreateRequest = PayUOrderCreateRequest.builder()
             .extOrderId(orderId)
             .continueUrl(continueUrl)
             .notifyUrl(notifyUrl)
+            .customerIp(ipAddress)
             .merchantPosId(posId)
             .description("Hurtpol - zakup sprzętu komputerowego")
             .currencyCode("PLN")

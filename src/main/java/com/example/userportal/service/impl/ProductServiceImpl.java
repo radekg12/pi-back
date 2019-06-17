@@ -5,7 +5,7 @@ import com.example.userportal.domain.SpecificationPosition;
 import com.example.userportal.exception.ResourceNotFoundException;
 import com.example.userportal.repository.ProductRepository;
 import com.example.userportal.repository.SpecificationPositionRepository;
-import com.example.userportal.requestmodel.UpdateWarehouseStateRequest;
+import com.example.userportal.requestmodel.WarehouseStateUpdateRequest;
 import com.example.userportal.service.ProductService;
 import com.example.userportal.service.RecommendationService;
 import com.example.userportal.service.dto.ProductDTO;
@@ -116,12 +116,12 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public ProductDTO takeProductFromWarehouse(UpdateWarehouseStateRequest request){
+  public ProductDTO takeProductFromWarehouse(WarehouseStateUpdateRequest request){
     return updatePhysicalQuantity(request.getProductId(),request.getQuantity() * (-1));
   }
 
   @Override
-  public ProductDTO putProductIntoWarehouse(UpdateWarehouseStateRequest request){
+  public ProductDTO putProductIntoWarehouse(WarehouseStateUpdateRequest request){
     return updatePhysicalQuantity(request.getProductId(),request.getQuantity() * (-1));
   }
 

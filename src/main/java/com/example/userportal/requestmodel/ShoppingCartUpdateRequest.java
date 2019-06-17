@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class UpdateWarehouseStateRequest implements Serializable {
+public class ShoppingCartUpdateRequest implements Serializable {
   private Integer productId;
   private Integer quantity;
 }
